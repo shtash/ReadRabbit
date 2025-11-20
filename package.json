@@ -1,0 +1,14 @@
+{
+    "name": "readrabbit-monorepo",
+    "private": true,
+    "workspaces": [
+        "web",
+        "mobile",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "npm run dev --workspace=web",
+        "build": "npm run build --workspaces",
+        "lint": "npm run lint --workspaces"
+    }
+}

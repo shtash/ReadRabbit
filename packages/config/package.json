@@ -1,0 +1,12 @@
+{
+    "name": "@readrabbit/config",
+    "version": "0.1.0",
+    "main": "index.ts",
+    "types": "index.ts",
+    "scripts": {
+        "lint": "echo 'linting config'"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}
