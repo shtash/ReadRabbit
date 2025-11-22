@@ -1,9 +1,14 @@
+"use client";
+
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { StoryCard } from "@/components/ui/story-card";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useCardWidth } from "@/hooks/useCardWidth";
+import { appConfig } from "@/config/app.config";
 
 export default function Home() {
+  const cardWidth = useCardWidth();
   const stories = [
     {
       title: "The Rabbit's Moon Adventure",
@@ -24,6 +29,36 @@ export default function Home() {
       title: "School Day Surprise",
       category: "School",
       color: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    },
+    {
+      title: "Rocket to Mars",
+      category: "Space",
+      color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    },
+    {
+      title: "Ocean Friends",
+      category: "Ocean",
+      color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    },
+    {
+      title: "The Brave Knight",
+      category: "Fantasy",
+      color: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    },
+    {
+      title: "Dinosaur Discovery",
+      category: "Prehistoric",
+      color: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+    },
+    {
+      title: "Pizza Party",
+      category: "Food",
+      color: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+    },
+    {
+      title: "The Lost Puppy",
+      category: "Animals",
+      color: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
     },
   ];
 
@@ -47,6 +82,36 @@ export default function Home() {
       title: "Underwater Tea Party",
       category: "Ocean",
       color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    },
+    {
+      title: "Robot's First Day",
+      category: "Sci-Fi",
+      color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    },
+    {
+      title: "The Magic Paintbrush",
+      category: "Art",
+      color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    },
+    {
+      title: "Pirate Treasure Hunt",
+      category: "Adventure",
+      color: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    },
+    {
+      title: "The Singing Tree",
+      category: "Nature",
+      color: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+    },
+    {
+      title: "Superhero Training",
+      category: "Action",
+      color: "linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)",
+    },
+    {
+      title: "The Time Machine",
+      category: "Sci-Fi",
+      color: "linear-gradient(135deg, #5f27cd 0%, #341f97 100%)",
     },
   ];
 
@@ -105,20 +170,23 @@ export default function Home() {
             <h2 className="text-xl font-bold text-foreground">
               Stories of the day
             </h2>
-            <button className="text-sm font-bold text-primary transition-colors hover:text-primary/80">
-              See all
-            </button>
+            <Link href="/stories-of-the-day" className="text-sm font-bold text-primary transition-colors hover:text-primary/80">
+              See more
+            </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {stories.map((story, index) => (
-              <StoryCard
-                key={index}
-                title={story.title}
-                category={story.category}
-                color={story.color}
-              />
-            ))}
+          <div className="-mx-6 overflow-x-auto px-6 scrollbar-hide">
+            <div className="flex gap-4 pb-2">
+              {stories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
+                <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
+                  <StoryCard
+                    title={story.title}
+                    category={story.category}
+                    color={story.color}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -128,20 +196,23 @@ export default function Home() {
             <h2 className="text-xl font-bold text-foreground">
               Community Content
             </h2>
-            <button className="text-sm font-bold text-primary transition-colors hover:text-primary/80">
-              See all
-            </button>
+            <Link href="/community-content" className="text-sm font-bold text-primary transition-colors hover:text-primary/80">
+              See more
+            </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {communityStories.map((story, index) => (
-              <StoryCard
-                key={index}
-                title={story.title}
-                category={story.category}
-                color={story.color}
-              />
-            ))}
+          <div className="-mx-6 overflow-x-auto px-6 scrollbar-hide">
+            <div className="flex gap-4 pb-2">
+              {communityStories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
+                <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
+                  <StoryCard
+                    title={story.title}
+                    category={story.category}
+                    color={story.color}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>

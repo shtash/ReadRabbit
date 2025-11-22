@@ -1,0 +1,96 @@
+/**
+ * ReadRabbit App Configuration
+ * 
+ * This file contains all configurable parameters for the ReadRabbit application.
+ * Modify these values to adjust app behavior without changing code.
+ */
+
+export const appConfig = {
+    /**
+     * Story Card Display Settings
+     */
+    storyCards: {
+        /**
+         * Number of cards visible on mobile devices (can be fractional, e.g., 2.5)
+         * This creates a "peek" effect showing part of the next card
+         */
+        visibleOnMobile: 2.5,
+
+        /**
+         * Number of cards visible on desktop devices (can be fractional, e.g., 4.5)
+         */
+        visibleOnDesktop: 4.5,
+
+        /**
+         * Maximum number of stories to show in each section on the home page
+         */
+        maxVisibleInSection: 10,
+
+        /**
+         * Gap between cards in pixels
+         */
+        gap: 16,
+
+        /**
+         * Breakpoint (in pixels) between mobile and desktop layouts
+         */
+        mobileBreakpoint: 768,
+    },
+
+    /**
+     * Theme Settings
+     */
+    theme: {
+        /**
+         * Default theme mode: 'dark' | 'light' | 'system'
+         */
+        defaultMode: 'dark' as const,
+    },
+
+    /**
+     * Reading Experience Settings
+     */
+    reading: {
+        /**
+         * Auto-advance delay in milliseconds (0 = disabled)
+         */
+        autoAdvanceDelay: 0,
+
+        /**
+         * Enable text-to-speech
+         */
+        enableTTS: false,
+    },
+
+    /**
+     * Quiz Settings
+     */
+    quiz: {
+        /**
+         * Number of questions per story
+         */
+        questionsPerStory: 1,
+
+        /**
+         * Time limit per question in seconds (0 = no limit)
+         */
+        timeLimitSeconds: 0,
+    },
+
+    /**
+     * Rewards Settings
+     */
+    rewards: {
+        /**
+         * XP points per story completed
+         */
+        xpPerStory: 50,
+
+        /**
+         * XP points per correct quiz answer
+         */
+        xpPerCorrectAnswer: 10,
+    },
+} as const;
+
+export type AppConfig = typeof appConfig;
