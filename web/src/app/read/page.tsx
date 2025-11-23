@@ -6,9 +6,9 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
-export default function ReadPage() {
+function ReadContent() {
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
     const router = useRouter();
@@ -117,5 +117,13 @@ export default function ReadPage() {
 
             <BottomNav />
         </div>
+    );
+}
+
+export default function ReadPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+            <ReadContent />
+        </Suspense>
     );
 }
