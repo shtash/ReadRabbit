@@ -42,9 +42,18 @@ export const appConfig = {
      */
     theme: {
         /**
-         * Default theme mode: 'dark' | 'light' | 'system'
+         * Default theme mode: 'dark' | 'light' | 'white' | 'system'
          */
-        defaultMode: 'dark' as const,
+        defaultMode: 'dark' as 'dark' | 'light' | 'white' | 'system',
+
+        /**
+         * Available theme modes
+         */
+        modes: {
+            dark: 'dark',
+            light: 'light',
+            white: 'white',
+        } as const,
     },
 
     /**

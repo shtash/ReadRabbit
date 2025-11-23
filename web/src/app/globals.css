@@ -13,6 +13,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Default (Dark) */
 :root {
   --background: #1c1917;
   /* Warm dark grey */
@@ -24,22 +25,57 @@
   --card-foreground: #f5f5f4;
   --muted: #44403c;
   --muted-foreground: #a8a29e;
+  --nav-background: rgba(28, 25, 23, 0.85);
+  /* Translucent dark */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #fdfbf7;
-    /* Warm off-white */
-    --foreground: #2d2a26;
-    /* Soft black */
-    --primary: #ff8c00;
-    /* Vibrant Orange */
-    --primary-foreground: #ffffff;
-    --card: #ffffff;
-    --card-foreground: #2d2a26;
-    --muted: #f3f0e9;
-    --muted-foreground: #78716c;
-  }
+/* Dark Mode (Explicit) */
+.dark {
+  --background: #1c1917;
+  --foreground: #f5f5f4;
+  --primary: #ff9f33;
+  --primary-foreground: #1c1917;
+  --card: #292524;
+  --card-foreground: #f5f5f4;
+  --muted: #44403c;
+  --muted-foreground: #a8a29e;
+  --nav-background: rgba(41, 37, 36, 0.9);
+  /* Stone-800 - Lighter than bg */
+}
+
+/* Light Mode */
+.light {
+  --background: #e7e5e4;
+  /* Stone-200 - Darker grey */
+  --foreground: #2d2a26;
+  /* Soft black */
+  --primary: #ff8c00;
+  /* Vibrant Orange */
+  --primary-foreground: #ffffff;
+  --card: #ffffff;
+  /* White cards */
+  --card-foreground: #2d2a26;
+  --muted: #d6d3d1;
+  --muted-foreground: #78716c;
+  --nav-background: rgba(214, 211, 209, 0.9);
+  /* Stone-300 - Darker than bg */
+}
+
+/* White Mode */
+.white {
+  --background: #ffffff;
+  /* Pure white */
+  --foreground: #1c1917;
+  /* Dark grey text */
+  --primary: #ff8c00;
+  --primary-foreground: #ffffff;
+  --card: #f5f5f4;
+  /* Light grey card on white bg */
+  --card-foreground: #1c1917;
+  --muted: #e7e5e4;
+  --muted-foreground: #78716c;
+  --nav-background: rgba(245, 245, 244, 0.9);
+  /* Stone-100 - Darker than bg */
 }
 
 body {

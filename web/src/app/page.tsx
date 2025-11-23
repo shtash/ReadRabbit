@@ -6,9 +6,14 @@ import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useCardWidth } from "@/hooks/useCardWidth";
 import { appConfig } from "@/config/app.config";
+import { UserSwitcher } from "@/components/UserSwitcher";
+import { useUser } from "@/context/UserContext";
+import { useState } from "react";
 
 export default function Home() {
   const cardWidth = useCardWidth();
+  const { currentUser } = useUser();
+  const [isUserSwitcherOpen, setIsUserSwitcherOpen] = useState(false);
   const stories = [
     {
       title: "The Rabbit's Moon Adventure",
@@ -122,20 +127,24 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-              Hi, <span className="text-primary">Alex!</span> 👋
+              Hi, <span className="text-primary">{currentUser?.name || 'Guest'}!</span> 👋
             </h1>
             <p className="text-muted-foreground font-medium">Ready for a story?</p>
           </div>
-          <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-primary bg-muted">
-            {/* Avatar Placeholder */}
+          <button
+            onClick={() => setIsUserSwitcherOpen(true)}
+            className="h-10 w-10 overflow-hidden rounded-full border-2 border-primary bg-muted transition-transform hover:scale-105 active:scale-95"
+          >
             <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.avatarSeed || 'default'}`}
               alt="Profile"
               className="h-full w-full object-cover"
             />
-          </div>
+          </button>
         </div>
       </header>
+
+      <UserSwitcher isOpen={isUserSwitcherOpen} onClose={() => setIsUserSwitcherOpen(false)} />
 
       <main className="flex flex-col gap-8 px-6">
         {/* Hero Action */}

@@ -1,49 +1,54 @@
-import Link from "next/link";
-import { User, Plus } from "lucide-react";
+"use client";
+
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { BottomNav } from "@/components/ui/bottom-nav";
+import { useUser } from "@/context/UserContext";
 
 export default function ProfilePage() {
-    const profiles = [
-        { id: "1", name: "Alex", color: "bg-blue-500" },
-        { id: "2", name: "Sam", color: "bg-green-500" },
-    ];
+    const { currentUser } = useUser();
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 font-sans text-foreground">
-            <div className="w-full max-w-md space-y-8 text-center">
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-extrabold tracking-tight">Who is reading?</h1>
-                    <p className="text-muted-foreground">Choose your profile to start.</p>
-                </div>
+        <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+            <header className="px-6 pt-12 pb-6">
+                <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                    Profile
+                </h1>
+            </header>
 
-                <div className="grid grid-cols-2 gap-6">
-                    {profiles.map((profile) => (
-                        <Link
-                            key={profile.id}
-                            href="/"
-                            className="group flex flex-col items-center gap-3"
-                        >
-                            <div
-                                className={`flex h-32 w-32 items-center justify-center rounded-full ${profile.color} shadow-xl transition-transform group-hover:scale-105 group-active:scale-95`}
-                            >
-                                <User className="h-16 w-16 text-white" />
-                            </div>
-                            <span className="text-xl font-bold group-hover:text-primary">
-                                {profile.name}
+            <main className="px-6 flex flex-col gap-8">
+                {/* User Info */}
+                <section className="flex items-center gap-4 rounded-2xl bg-card p-6 border border-muted">
+                    <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-primary bg-muted">
+                        <img
+                            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.avatarSeed || 'default'}`}
+                            alt="Profile"
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold">{currentUser?.name || 'Guest'}</h2>
+                        {currentUser?.isParent && (
+                            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                                PARENT ACCOUNT
                             </span>
-                        </Link>
-                    ))}
+                        )}
+                    </div>
+                </section>
 
-                    {/* Add Profile Button */}
-                    <button className="group flex flex-col items-center gap-3">
-                        <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-dashed border-muted-foreground/30 bg-muted/30 transition-colors group-hover:border-primary/50 group-hover:bg-primary/5">
-                            <Plus className="h-12 w-12 text-muted-foreground group-hover:text-primary" />
+                {/* Settings */}
+                <section className="flex flex-col gap-4">
+                    <h3 className="text-xl font-bold text-foreground">Settings</h3>
+
+                    <div className="rounded-2xl bg-card p-6 border border-muted flex flex-col gap-4">
+                        <div>
+                            <h4 className="font-bold mb-2">Appearance</h4>
+                            <ThemeSwitcher />
                         </div>
-                        <span className="text-xl font-bold text-muted-foreground group-hover:text-primary">
-                            Add New
-                        </span>
-                    </button>
-                </div>
-            </div>
+                    </div>
+                </section>
+            </main>
+
+            <BottomNav />
         </div>
     );
 }
