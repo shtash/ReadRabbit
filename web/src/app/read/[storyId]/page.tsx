@@ -4,27 +4,24 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 export default function StoryPage({ params }: { params: { storyId: string } }) {
     const [currentPage, setCurrentPage] = useState(0);
     const router = useRouter();
+    const story = useQuery(api.stories.getStory, { storyId: params.storyId as Id<"stories"> });
 
-    const storyPages = [
+    // Mock pages if story is loading or empty (for now, until AI is real)
+    const storyPages = story?.pages || [
         {
-            text: "Once upon a time, there was a little rabbit named Barnaby who loved to read.",
-            image: "https://placehold.co/600x400/orange/white?text=Rabbit+Reading",
-        },
-        {
-            text: "One day, Barnaby found a magical book that glowed in the dark!",
-            image: "https://placehold.co/600x400/purple/white?text=Magic+Book",
-        },
-        {
-            text: "He opened the book and WHOOSH! He was transported to a land made of carrots.",
-            image: "https://placehold.co/600x400/orange/white?text=Carrot+Land",
-        },
+            text: "Loading your story...",
+            illustrationUrl: "https://placehold.co/600x400/gray/white?text=Loading...",
+        }
     ];
 
-    const isLastPage = currentPage === storyPages.length - 1;
+    const isLastPage = currentPage === (storyPages.length || 1) - 1;
 
     const handleNext = () => {
         if (isLastPage) {
@@ -40,18 +37,30 @@ export default function StoryPage({ params }: { params: { storyId: string } }) {
         }
     };
 
+    if (!story) {
+        return <div className="flex min-h-screen items-center justify-center">Loading...</div>;
+    }
+
+    // Handle case where pages might be undefined if story structure changed
+    const pages = story.pages || [];
+    if (pages.length === 0) {
+        return <div className="flex min-h-screen items-center justify-center">Story has no pages!</div>;
+    }
+
+    const currentPageData = pages[currentPage];
+
     return (
         <div className="mx-auto min-h-screen w-full bg-background font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             {/* Header */}
             <header className="flex items-center justify-between px-6 pt-8 pb-4">
                 <Link
-                    href="/read"
+                    href={`/read?childId=${story.childId}`}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
                 >
                     <ArrowLeft className="h-6 w-6" />
                 </Link>
                 <div className="text-sm font-bold text-muted-foreground">
-                    Page {currentPage + 1} of {storyPages.length}
+                    Page {currentPage + 1} of {pages.length}
                 </div>
                 <div className="w-10" /> {/* Spacer */}
             </header>
@@ -60,7 +69,7 @@ export default function StoryPage({ params }: { params: { storyId: string } }) {
             <main className="flex flex-col items-center gap-8 px-6 py-4">
                 <div className="aspect-video w-full overflow-hidden rounded-3xl bg-muted shadow-lg">
                     <img
-                        src={storyPages[currentPage].image}
+                        src={currentPageData.illustrationUrl || "https://placehold.co/600x400/orange/white?text=No+Image"}
                         alt={`Page ${currentPage + 1}`}
                         className="h-full w-full object-cover"
                     />
@@ -68,7 +77,7 @@ export default function StoryPage({ params }: { params: { storyId: string } }) {
 
                 <div className="w-full rounded-3xl bg-card p-8 shadow-sm dark:bg-card/50">
                     <p className="text-2xl font-medium leading-relaxed text-foreground">
-                        {storyPages[currentPage].text}
+                        {currentPageData.text}
                     </p>
                 </div>
             </main>

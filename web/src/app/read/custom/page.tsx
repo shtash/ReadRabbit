@@ -1,12 +1,45 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeft, Mic, Send } from "lucide-react";
+import { ArrowLeft, Mic, Send, Sparkles } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { useState } from "react";
 
 export default function CustomStoryPage() {
+    const searchParams = useSearchParams();
+    const childId = searchParams.get("childId");
+    const router = useRouter();
+    const createStory = useMutation(api.stories.createStory);
+    const [prompt, setPrompt] = useState("");
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const handleGenerate = async () => {
+        if (!childId || !prompt.trim()) return;
+        setIsGenerating(true);
+        try {
+            const storyId = await createStory({
+                childId: childId as any,
+                theme: "custom",
+                personalizationMode: "none",
+                sourceMode: "custom",
+                customPromptText: prompt,
+            });
+            router.push(`/read/${storyId}`);
+        } catch (error) {
+            console.error("Failed to generate story:", error);
+            setIsGenerating(false);
+        }
+    };
+
+    if (!childId) return <div>Missing childId</div>;
+
     return (
         <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             <header className="flex items-center gap-4 px-6 pt-12 pb-6">
                 <Link
-                    href="/read"
+                    href={`/read?childId=${childId}`}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
                 >
                     <ArrowLeft className="h-6 w-6" />
@@ -30,15 +63,18 @@ export default function CustomStoryPage() {
 
                 <div className="relative">
                     <textarea
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
                         placeholder="Or type your story idea here..."
                         className="min-h-[200px] w-full resize-none rounded-3xl border-2 border-muted bg-background p-6 text-lg font-medium placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                     />
-                    <Link
-                        href="/read/mock-story-1"
-                        className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isGenerating || !prompt.trim()}
+                        className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 active:scale-95 disabled:opacity-50"
                     >
-                        <Send className="h-6 w-6" />
-                    </Link>
+                        {isGenerating ? <Sparkles className="h-6 w-6 animate-spin" /> : <Send className="h-6 w-6" />}
+                    </button>
                 </div>
             </main>
         </div>

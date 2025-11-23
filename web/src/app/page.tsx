@@ -6,14 +6,37 @@ import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useCardWidth } from "@/hooks/useCardWidth";
 import { appConfig } from "@/config/app.config";
-import { UserSwitcher } from "@/components/UserSwitcher";
-import { useUser } from "@/context/UserContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { OnboardingTutorial } from "@/components/OnboardingTutorial";
 
 export default function Home() {
   const cardWidth = useCardWidth();
-  const { currentUser } = useUser();
-  const [isUserSwitcherOpen, setIsUserSwitcherOpen] = useState(false);
+  const { user: clerkUser, isLoaded } = useUser();
+  const convexUser = useQuery(api.users.getCurrentUser);
+  const getOrCreateUser = useMutation(api.users.getOrCreateUser);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Auto-create user in Convex on first sign-in
+  useEffect(() => {
+    const createUser = async () => {
+      if (isLoaded && clerkUser && !convexUser) {
+        console.log("🔵 Attempting to create Convex user...", {
+          clerkEmail: clerkUser.emailAddresses[0]?.emailAddress,
+          clerkId: clerkUser.id,
+        });
+        try {
+          const result = await getOrCreateUser();
+          console.log("✅ Convex user created:", result);
+        } catch (error) {
+          console.error("❌ Failed to create Convex user:", error);
+        }
+      }
+    };
+    createUser();
+  }, [isLoaded, clerkUser, convexUser, getOrCreateUser]);
   const stories = [
     {
       title: "The Rabbit's Moon Adventure",
@@ -120,31 +143,63 @@ export default function Home() {
     },
   ];
 
+  // Show onboarding for new users
+  useEffect(() => {
+    if (isLoaded && clerkUser && convexUser) {
+      if (!convexUser.onboardingCompleted) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [isLoaded, clerkUser, convexUser]);
+
+  // Get display name
+  const displayName = clerkUser?.firstName || clerkUser?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'there';
+
   return (
     <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+      {/* Onboarding Tutorial */}
+      {showOnboarding && (
+        <OnboardingTutorial onComplete={() => setShowOnboarding(false)} />
+      )}
+
       {/* Header / Welcome */}
       <header className="px-6 pt-12 pb-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-              Hi, <span className="text-primary">{currentUser?.name || 'Guest'}!</span> 👋
+              <SignedOut>
+                Welcome! <span className="text-primary">👋</span>
+              </SignedOut>
+              <SignedIn>
+                Hi, <span className="text-primary">{displayName}!</span> 👋
+              </SignedIn>
             </h1>
             <p className="text-muted-foreground font-medium">Ready for a story?</p>
           </div>
-          <button
-            onClick={() => setIsUserSwitcherOpen(true)}
-            className="h-10 w-10 overflow-hidden rounded-full border-2 border-primary bg-muted transition-transform hover:scale-105 active:scale-95"
-          >
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.avatarSeed || 'default'}`}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
-          </button>
+          <div className="flex items-center gap-4">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-transform hover:scale-105 active:scale-95">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="rounded-full border-2 border-primary px-4 py-2 text-sm font-bold text-primary transition-transform hover:scale-105 active:scale-95">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/parent">
+                <button className="rounded-full bg-secondary px-4 py-2 text-sm font-bold text-secondary-foreground transition-transform hover:scale-105 active:scale-95">
+                  Parent Dashboard
+                </button>
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </div>
         </div>
       </header>
-
-      <UserSwitcher isOpen={isUserSwitcherOpen} onClose={() => setIsUserSwitcherOpen(false)} />
 
       <main className="flex flex-col gap-8 px-6">
         {/* Hero Action */}
