@@ -12,12 +12,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ShieldCheck, User, LogOut, Plus } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
+import { ShieldCheck, User, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function ProfileSwitcher() {
+    const router = useRouter();
     const { user } = useUser();
-    const { signOut } = useClerk();
     const convexUser = useQuery(api.users.getCurrentUser);
     const children = useQuery(api.children.getChildrenWithPhotos);
     const switchProfile = useMutation(api.users.switchProfile);
@@ -36,6 +36,7 @@ export function ProfileSwitcher() {
             isParentMode: isParent,
             childId: childId as any,
         });
+        router.push("/");
     };
 
     return (
@@ -93,16 +94,6 @@ export function ProfileSwitcher() {
                         No children profiles yet
                     </div>
                 )}
-
-                <DropdownMenuSeparator className="my-1" />
-
-                <DropdownMenuItem
-                    onClick={() => signOut()}
-                    className="flex items-center gap-2 rounded-lg px-2 py-2 text-red-500 hover:bg-red-50 cursor-pointer"
-                >
-                    <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
-                </DropdownMenuItem>
 
             </DropdownMenuContent>
         </DropdownMenu>

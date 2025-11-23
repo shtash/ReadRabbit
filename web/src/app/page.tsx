@@ -5,6 +5,7 @@ import { StoryCard } from "@/components/ui/story-card";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useCardWidth } from "@/hooks/useCardWidth";
+import { useDragScroll } from "@/hooks/useDragScroll";
 import { appConfig } from "@/config/app.config";
 import { useState, useEffect } from "react";
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
@@ -16,6 +17,8 @@ import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 
 export default function Home() {
   const cardWidth = useCardWidth();
+  const storiesRef = useDragScroll<HTMLDivElement>();
+  const communityRef = useDragScroll<HTMLDivElement>();
   const { user: clerkUser, isLoaded } = useUser();
   const convexUser = useQuery(api.users.getCurrentUser);
   const getOrCreateUser = useMutation(api.users.getOrCreateUser);
@@ -176,7 +179,7 @@ export default function Home() {
       )}
 
       {/* Header / Welcome */}
-      <header className="px-6 pt-12 pb-6">
+      <header className="px-6 pt-4 pb-6 md:pt-12">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
@@ -247,7 +250,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="-mx-6 overflow-x-auto px-6 scrollbar-hide">
+          <div ref={storiesRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
             <div className="flex gap-4 pb-2">
               {stories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
                 <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
@@ -273,7 +276,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="-mx-6 overflow-x-auto px-6 scrollbar-hide">
+          <div ref={communityRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
             <div className="flex gap-4 pb-2">
               {communityStories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
                 <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
+import { useEffect } from "react";
+import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { Plus, Settings } from "lucide-react";
 import { appConfig } from "@/config/app.config";
@@ -10,13 +10,17 @@ import { useRouter } from "next/navigation";
 
 export default function ParentDashboard() {
     const router = useRouter();
-    const { user } = useUser();
     const children = useQuery(api.children.getChildrenWithPhotos);
-    const switchProfile = useMutation(api.users.switchProfile);
+    const convexUser = useQuery(api.users.getCurrentUser);
 
-    const handleChildClick = async (childId: string) => {
-        await switchProfile({ isParentMode: false, childId: childId as any });
-        router.push("/");
+    useEffect(() => {
+        if (convexUser && !convexUser.isParentMode) {
+            router.push("/");
+        }
+    }, [convexUser, router]);
+
+    const handleChildClick = (childId: string) => {
+        router.push(`/profile/${childId}`);
     };
 
     return (

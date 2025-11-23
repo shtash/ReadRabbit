@@ -26,8 +26,8 @@
   --card-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --nav-background: rgba(28, 25, 23, 0.85);
-  /* Translucent dark */
+  --nav-background: rgba(28, 25, 23, 0.6);
+  /* Semi-transparent */
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -66,8 +66,8 @@
   --card-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --nav-background: rgba(41, 37, 36, 0.9);
-  /* Stone-800 - Lighter than bg */
+  --nav-background: rgba(41, 37, 36, 0.65);
+  /* Stone-800 - Semi-transparent */
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
@@ -107,8 +107,8 @@
   --card-foreground: #2d2a26;
   --muted: #d6d3d1;
   --muted-foreground: #78716c;
-  --nav-background: rgba(214, 211, 209, 0.9);
-  /* Stone-300 - Darker than bg */
+  --nav-background: rgba(214, 211, 209, 0.65);
+  /* Stone-300 - Semi-transparent */
 }
 
 /* White Mode */
@@ -124,8 +124,8 @@
   --card-foreground: #1c1917;
   --muted: #e7e5e4;
   --muted-foreground: #78716c;
-  --nav-background: rgba(245, 245, 244, 0.9);
-  /* Stone-100 - Darker than bg */
+  --nav-background: rgba(245, 245, 244, 0.65);
+  /* Stone-100 - Semi-transparent */
 }
 
 body {
@@ -142,6 +142,35 @@ body {
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .drag-scroll {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .drag-scroll:active {
+    cursor: grabbing;
+  }
+
+  .drag-scroll>* {
+    pointer-events: none;
+  }
+
+  .drag-scroll:not(:active)>* {
+    pointer-events: auto;
+  }
+
+  .scroll-smooth-x {
+    scroll-behavior: smooth;
+    cursor: grab;
+  }
+
+  .scroll-smooth-x:active {
+    cursor: grabbing;
   }
 }
 
