@@ -217,3 +217,60 @@ export const listUsers = mutation({
         };
     },
 });
+
+/**
+ * Backfill birthdate for children based on age
+ * Usage: npx convex run migrations:backfillChildBirthdates
+ */
+export const backfillChildBirthdates = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const children = await ctx.db.query("children").collect();
+        let updatedCount = 0;
+
+        for (const child of children) {
+            if (child.birthdate === undefined) {
+                // Approximate birthdate from age
+                // Current date - (age * 365.25 days)
+                const ageInMs = child.age * 365.25 * 24 * 60 * 60 * 1000;
+                const approximateBirthdate = Date.now() - ageInMs;
+
+                await ctx.db.patch(child._id, {
+                    birthdate: approximateBirthdate,
+                });
+                updatedCount++;
+            }
+        }
+
+        return {
+            success: true,
+            message: `Backfilled birthdate for ${updatedCount} children`,
+            total: children.length,
+            updated: updatedCount,
+        };
+    },
+});
+
+/**
+ * Delete all children (useful for clearing legacy data)
+ * Usage: npx convex run migrations:deleteAllChildren
+ */
+export const deleteAllChildren = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const children = await ctx.db.query("children").collect();
+        let deletedCount = 0;
+
+        for (const child of children) {
+            await ctx.db.delete(child._id);
+            deletedCount++;
+        }
+
+        return {
+            success: true,
+            message: `Deleted ${deletedCount} children`,
+            deletedCount,
+        };
+    },
+});
+

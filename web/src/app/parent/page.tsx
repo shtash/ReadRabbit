@@ -1,18 +1,26 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { appConfig } from "@/config/app.config";
+import { useRouter } from "next/navigation";
 
 export default function ParentDashboard() {
+    const router = useRouter();
     const { user } = useUser();
-    const children = useQuery(api.children.getChildren);
+    const children = useQuery(api.children.getChildrenWithPhotos);
+    const switchProfile = useMutation(api.users.switchProfile);
+
+    const handleChildClick = async (childId: string) => {
+        await switchProfile({ isParentMode: false, childId: childId as any });
+        router.push("/");
+    };
 
     return (
-        <div className="mx-auto min-h-screen w-full p-8 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+        <div className={appConfig.layout.workspaceContainer}>
             <header className="mb-12 flex flex-col items-center justify-center gap-6">
                 <div className="rounded-full border-4 border-slate-900 bg-white px-8 py-3 shadow-xl dark:border-white dark:bg-slate-900">
                     <h1 className="text-3xl font-black uppercase tracking-widest text-slate-900 dark:text-white">
@@ -29,21 +37,38 @@ export default function ParentDashboard() {
                 <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
                     {/* Child Cards */}
                     {children.map((child) => (
-                        <Link href={`/profile/${child._id}`} key={child._id} className="group flex flex-col items-center gap-4">
+                        <div key={child._id} className="group flex flex-col items-center gap-4">
                             <div
-                                className="relative w-32 overflow-hidden rounded-full border-4 border-white shadow-xl transition-transform group-hover:scale-105 group-active:scale-95 dark:border-slate-800 aspect-square md:h-auto"
+                                onClick={() => handleChildClick(child._id)}
+                                className="relative w-32 overflow-hidden rounded-full border-4 border-white shadow-xl transition-transform hover:scale-105 active:scale-95 dark:border-slate-800 aspect-square md:h-auto cursor-pointer"
                                 style={{ width: `${appConfig.parentDashboard.childCardWidthPercentage}%` }}
                             >
-                                {/* Placeholder for Avatar - using first letter for now */}
-                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-300 to-yellow-200 text-4xl font-black text-orange-700 md:text-8xl lg:text-9xl">
-                                    {child.name[0].toUpperCase()}
-                                </div>
+                                {child.faceImageUrl ? (
+                                    <img
+                                        src={child.faceImageUrl}
+                                        alt={child.name}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-300 to-yellow-200 text-4xl font-black text-orange-700 md:text-8xl lg:text-9xl">
+                                        {child.name[0].toUpperCase()}
+                                    </div>
+                                )}
+
+                                {/* Settings Icon */}
+                                <Link
+                                    href={`/profile/${child._id}`}
+                                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                    className="absolute top-2 right-2 bg-white dark:bg-slate-800 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                                >
+                                    <Settings className="h-4 w-4 text-slate-700 dark:text-slate-300" />
+                                </Link>
                             </div>
                             <div className="text-center">
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white md:text-2xl">{child.name}</h3>
                                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400 md:text-lg">({child.age} years old)</p>
                             </div>
-                        </Link>
+                        </div>
                     ))}
 
                     {/* Add Child Button */}

@@ -19,7 +19,7 @@ export function ProfileSwitcher() {
     const { user } = useUser();
     const { signOut } = useClerk();
     const convexUser = useQuery(api.users.getCurrentUser);
-    const children = useQuery(api.children.getChildren);
+    const children = useQuery(api.children.getChildrenWithPhotos);
     const switchProfile = useMutation(api.users.switchProfile);
 
     if (!convexUser || !children) return null;
@@ -28,7 +28,7 @@ export function ProfileSwitcher() {
     const activeChild = children.find((c) => c._id === convexUser.activeChildId);
 
     // Determine current avatar and name
-    const currentAvatar = isParentMode ? user?.imageUrl : activeChild?.avatarId; // TODO: Map avatarId to image URL
+    const currentAvatar = isParentMode ? user?.imageUrl : activeChild?.faceImageUrl;
     const currentName = isParentMode ? (user?.firstName || "Parent") : activeChild?.name;
 
     const handleSwitch = async (isParent: boolean, childId?: string) => {
@@ -41,7 +41,7 @@ export function ProfileSwitcher() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="outline-none">
-                <Avatar className="h-9 w-9 border-2 border-white/20 transition-transform hover:scale-105 active:scale-95">
+                <Avatar className="h-14 w-14 md:h-20 md:w-20 border-2 border-white/20 transition-transform hover:scale-105 active:scale-95">
                     <AvatarImage src={currentAvatar} alt={currentName} />
                     <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                         {currentName?.[0]?.toUpperCase()}
@@ -58,13 +58,10 @@ export function ProfileSwitcher() {
                     onClick={() => handleSwitch(true)}
                     className={`flex items-center gap-2 rounded-lg px-2 py-2 cursor-pointer ${isParentMode ? "bg-primary/10 text-primary font-bold" : "hover:bg-muted"}`}
                 >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white">
-                        <ShieldCheck className="h-4 w-4" />
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 text-white">
+                        <ShieldCheck className="h-8 w-8" />
                     </div>
-                    <div className="flex flex-col">
-                        <span>{user?.firstName || "Parent"}</span>
-                        <span className="text-[10px] text-muted-foreground font-normal">Admin</span>
-                    </div>
+                    <span className="text-base font-medium">Parent</span>
                     {isParentMode && <div className="ml-auto h-2 w-2 rounded-full bg-primary" />}
                 </DropdownMenuItem>
 
@@ -77,13 +74,16 @@ export function ProfileSwitcher() {
                         onClick={() => handleSwitch(false, child._id)}
                         className={`flex items-center gap-2 rounded-lg px-2 py-2 cursor-pointer ${!isParentMode && activeChild?._id === child._id ? "bg-primary/10 text-primary font-bold" : "hover:bg-muted"}`}
                     >
-                        <Avatar className="h-8 w-8">
-                            {/* Placeholder for child avatar logic */}
-                            <AvatarFallback className="bg-orange-100 text-orange-600">
-                                {child.name[0]}
-                            </AvatarFallback>
+                        <Avatar className="h-16 w-16">
+                            {child.faceImageUrl ? (
+                                <AvatarImage src={child.faceImageUrl} alt={child.name} />
+                            ) : (
+                                <AvatarFallback className="bg-orange-100 text-orange-600">
+                                    {child.name[0]}
+                                </AvatarFallback>
+                            )}
                         </Avatar>
-                        <span>{child.name}</span>
+                        <span className="text-base font-medium">{child.name}</span>
                         {!isParentMode && activeChild?._id === child._id && <div className="ml-auto h-2 w-2 rounded-full bg-primary" />}
                     </DropdownMenuItem>
                 ))}

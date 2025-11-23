@@ -110,6 +110,19 @@ export const appConfig = {
          * This controls the size of the circular icons on desktop
          */
         childCardWidthPercentage: 80, // 60-90 works good
+
+        /**
+         * Maximum pixel size for the cropped face image (width and height)
+         */
+        maxFaceImageSize: 512,
+    },
+
+    layout: {
+        /**
+         * Standard container classes for the workspace area
+         * Used to ensure consistent width across Parent Dashboard and related pages
+         */
+        workspaceContainer: "mx-auto min-h-screen w-full p-8 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]",
     },
 } as const;
 

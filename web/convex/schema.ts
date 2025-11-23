@@ -19,10 +19,14 @@ export default defineSchema({
     children: defineTable({
         parentId: v.id("users"),
         name: v.string(),
-        age: v.number(), // e.g. 5
+        gender: v.optional(v.string()),
+        birthdate: v.number(), // timestamp
+        age: v.number(), // e.g. 5 (derived)
         readingLevel: v.string(), // 'starter' | 'emerging' | 'independent'
         interests: v.array(v.string()),
         avatarId: v.string(), // ID of the selected avatar
+        originalImageStorageId: v.optional(v.id("_storage")),
+        faceImageStorageId: v.optional(v.id("_storage")),
         createdAt: v.number(),
     }).index("by_parent", ["parentId"]),
 

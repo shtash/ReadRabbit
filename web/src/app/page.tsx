@@ -154,8 +154,14 @@ export default function Home() {
     }
   }, [isLoaded, clerkUser, convexUser]);
 
-  // Get display name
-  const displayName = clerkUser?.firstName || clerkUser?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'there';
+  // Get children data for child mode name
+  const children = useQuery(api.children.getChildren);
+  const activeChild = children?.find((c) => c._id === convexUser?.activeChildId);
+
+  // Get display name - use child's name if in child mode
+  const displayName = convexUser?.isParentMode
+    ? (clerkUser?.firstName || clerkUser?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'there')
+    : (activeChild?.name || 'there');
 
   // If in Parent Mode, show Parent Dashboard
   if (convexUser?.isParentMode) {
