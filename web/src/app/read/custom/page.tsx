@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ArrowLeft, Mic, Send, Sparkles } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";

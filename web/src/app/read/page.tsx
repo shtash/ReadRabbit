@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { Sparkles, Grid, Mic } from "lucide-react";
 import { BottomNav } from "@/components/ui/bottom-nav";
