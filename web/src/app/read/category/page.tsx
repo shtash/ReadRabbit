@@ -5,7 +5,7 @@ import { ArrowLeft, Cat, Rocket, Ghost, Fish, Car, Music, Sparkles } from "lucid
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 // Map themes to icons (fallback)
 const iconMap: Record<string, any> = {
@@ -18,7 +18,7 @@ const iconMap: Record<string, any> = {
     music: Music,
 };
 
-export default function CategoryPage() {
+function CategoryContent() {
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
     const router = useRouter();
@@ -88,5 +88,13 @@ export default function CategoryPage() {
                 })}
             </main>
         </div>
+    );
+}
+
+export default function CategoryPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+            <CategoryContent />
+        </Suspense>
     );
 }
