@@ -7,9 +7,9 @@ import { ArrowLeft, Mic, Send, Sparkles } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 
-function CustomStoryContent() {
+export default function CustomStoryPage() {
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
     const router = useRouter();
@@ -80,13 +80,5 @@ function CustomStoryContent() {
                 </div>
             </main>
         </div>
-    );
-}
-
-export default function CustomStoryPage() {
-    return (
-        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
-            <CustomStoryContent />
-        </Suspense>
     );
 }
