@@ -39,6 +39,7 @@ export const createUserByEmail = mutation({
             createdAt: Date.now(),
             allowPersonalization: true,
             onboardingCompleted: false,
+            isParentMode: true,
         });
 
         const newUser = await ctx.db.get(userId);
@@ -81,10 +82,26 @@ export const resetOnboarding = mutation({
             usersToUpdate = allUsers.slice(0, 1);
         }
 
+        let updatedCount = 0;
         for (const user of usersToUpdate) {
-            await ctx.db.patch(user._id, {
+            const updates: Record<string, any> = {
                 onboardingCompleted: false,
-            });
+            };
+
+            // Add allowPersonalization if missing
+            if (user.allowPersonalization === undefined) {
+                updates.allowPersonalization = true;
+            }
+
+            // Add isParentMode if missing (default to true for existing admins/parents)
+            if (user.isParentMode === undefined) {
+                updates.isParentMode = true;
+            }
+
+            if (Object.keys(updates).length > 0) {
+                await ctx.db.patch(user._id, updates);
+                updatedCount++;
+            }
         }
 
         return {
@@ -92,6 +109,90 @@ export const resetOnboarding = mutation({
             message: `Reset onboarding for ${usersToUpdate.length} user(s)`,
             count: usersToUpdate.length,
             emails: usersToUpdate.map((u) => u.email),
+        };
+    },
+});
+
+/**
+ * Generic field reset migration
+ * Usage: npx convex run migrations:resetField '{"field":"onboardingCompleted","value":false,"email":"user@example.com"}'
+ */
+export const resetField = mutation({
+    args: {
+        field: v.string(),
+        value: v.any(),
+        adminOnly: v.optional(v.boolean()),
+        email: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const { field, value, adminOnly = false, email } = args;
+
+        const allUsers = await ctx.db.query("users").collect();
+        let usersToUpdate = allUsers;
+
+        // Filter by email
+        if (email) {
+            usersToUpdate = allUsers.filter((u) => u.email === email);
+        }
+        // Filter for admin only (first user)
+        else if (adminOnly) {
+            usersToUpdate = allUsers.slice(0, 1);
+        }
+
+        for (const user of usersToUpdate) {
+            await ctx.db.patch(user._id, {
+                [field]: value,
+            } as any);
+        }
+
+        return {
+            success: true,
+            message: `Reset field "${field}" to ${JSON.stringify(value)} for ${usersToUpdate.length} user(s)`,
+            count: usersToUpdate.length,
+            updatedEmails: usersToUpdate.map((u) => u.email),
+        };
+    },
+});
+
+/**
+ * Add missing fields to existing users
+ * Usage: npx convex run migrations:addMissingFields
+ */
+export const addMissingFields = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const allUsers = await ctx.db.query("users").collect();
+        let updatedCount = 0;
+
+        for (const user of allUsers) {
+            const updates: any = {};
+
+            // Add onboardingCompleted if missing
+            if (user.onboardingCompleted === undefined) {
+                updates.onboardingCompleted = false;
+            }
+
+            // Add allowPersonalization if missing
+            if (user.allowPersonalization === undefined) {
+                updates.allowPersonalization = true;
+            }
+
+            // Add isParentMode if missing (default to true for existing admins/parents)
+            if (user.isParentMode === undefined) {
+                updates.isParentMode = true;
+            }
+
+            if (Object.keys(updates).length > 0) {
+                await ctx.db.patch(user._id, updates);
+                updatedCount++;
+            }
+        }
+
+        return {
+            success: true,
+            message: `Added missing fields to ${updatedCount} user(s)`,
+            total: allUsers.length,
+            updated: updatedCount,
         };
     },
 });

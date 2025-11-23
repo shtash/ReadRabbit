@@ -100,6 +100,17 @@ export const appConfig = {
          */
         xpPerCorrectAnswer: 10,
     },
+
+    /**
+     * Parent Dashboard Settings
+     */
+    parentDashboard: {
+        /**
+         * Width of child avatar cards relative to the grid column width (percentage)
+         * This controls the size of the circular icons on desktop
+         */
+        childCardWidthPercentage: 80, // 60-90 works good
+    },
 } as const;
 
 export type AppConfig = typeof appConfig;

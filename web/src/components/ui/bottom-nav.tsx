@@ -4,10 +4,17 @@ import { BookOpen, Compass, Home, Library, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 export function BottomNav() {
     const pathname = usePathname();
+    const convexUser = useQuery(api.users.getCurrentUser);
 
     const isActive = (path: string) => pathname === path;
+
+    // Hide bottom nav in Parent Mode
+    if (convexUser?.isParentMode) return null;
 
     return (
         <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center px-4">

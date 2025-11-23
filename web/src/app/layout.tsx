@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { UserProvider } from "@/context/UserContext";
 import ConvexClientProvider from "./ConvexClientProvider";
+import { ParentModeBanner } from "@/components/ParentModeBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <UserProvider>
             <ThemeProvider>
+              <ParentModeBanner />
               {children}
             </ThemeProvider>
           </UserProvider>

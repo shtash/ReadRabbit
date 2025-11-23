@@ -1,101 +1,74 @@
 "use client";
 
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { Plus } from "lucide-react";
+import { appConfig } from "@/config/app.config";
 
 export default function ParentDashboard() {
     const { user } = useUser();
     const children = useQuery(api.children.getChildren);
-    const createChild = useMutation(api.children.createChild);
-
-    const [newChildName, setNewChildName] = useState("");
-    const [isCreating, setIsCreating] = useState(false);
-
-    const handleCreateChild = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsCreating(true);
-        try {
-            await createChild({
-                name: newChildName,
-                age: 5, // Default for now
-                readingLevel: "emerging",
-                interests: [],
-                avatarId: "rabbit_1",
-            });
-            setNewChildName("");
-        } catch (error) {
-            console.error("Failed to create child:", error);
-        } finally {
-            setIsCreating(false);
-        }
-    };
 
     return (
-        <div className="container mx-auto p-8">
-            <header className="mb-8 flex items-center justify-between">
-                <h1 className="text-3xl font-bold">Parent Dashboard</h1>
-                <Link href="/" className="text-primary hover:underline">
-                    Back to Home
-                </Link>
+        <div className="mx-auto min-h-screen w-full p-8 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+            <header className="mb-12 flex flex-col items-center justify-center gap-6">
+                <div className="rounded-full border-4 border-slate-900 bg-white px-8 py-3 shadow-xl dark:border-white dark:bg-slate-900">
+                    <h1 className="text-3xl font-black uppercase tracking-widest text-slate-900 dark:text-white">
+                        Parent Dashboard
+                    </h1>
+                </div>
             </header>
 
-            <div className="grid gap-8 md:grid-cols-2">
-                {/* Children List */}
-                <section className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h2 className="mb-4 text-xl font-semibold">Your Children</h2>
-                    {children === undefined ? (
-                        <p>Loading...</p>
-                    ) : children.length === 0 ? (
-                        <p className="text-muted-foreground">No children profiles yet.</p>
-                    ) : (
-                        <ul className="space-y-4">
-                            {children.map((child) => (
-                                <li key={child._id} className="flex items-center justify-between rounded-lg border p-4">
-                                    <div>
-                                        <p className="font-bold">{child.name}</p>
-                                        <p className="text-sm text-muted-foreground">Age: {child.age}</p>
-                                    </div>
-                                    <Link href={`/profile/${child._id}`}>
-                                        <button className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                                            Manage
-                                        </button>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
+            {children === undefined ? (
+                <div className="flex justify-center p-12">
+                    <p className="text-xl font-medium text-muted-foreground animate-pulse">Loading profiles...</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+                    {/* Child Cards */}
+                    {children.map((child) => (
+                        <Link href={`/profile/${child._id}`} key={child._id} className="group flex flex-col items-center gap-4">
+                            <div
+                                className="relative w-32 overflow-hidden rounded-full border-4 border-white shadow-xl transition-transform group-hover:scale-105 group-active:scale-95 dark:border-slate-800 aspect-square md:h-auto"
+                                style={{ width: `${appConfig.parentDashboard.childCardWidthPercentage}%` }}
+                            >
+                                {/* Placeholder for Avatar - using first letter for now */}
+                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-300 to-yellow-200 text-4xl font-black text-orange-700 md:text-8xl lg:text-9xl">
+                                    {child.name[0].toUpperCase()}
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white md:text-2xl">{child.name}</h3>
+                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 md:text-lg">({child.age} years old)</p>
+                            </div>
+                        </Link>
+                    ))}
 
-                {/* Add Child Form */}
-                <section className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h2 className="mb-4 text-xl font-semibold">Add a Child</h2>
-                    <form onSubmit={handleCreateChild} className="space-y-4">
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-medium">
-                                Name
-                            </label>
-                            <input
-                                id="name"
-                                type="text"
-                                value={newChildName}
-                                onChange={(e) => setNewChildName(e.target.value)}
-                                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2"
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={isCreating}
-                            className="w-full rounded-md bg-primary px-4 py-2 font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                    {/* Add Child Button */}
+                    <Link href="/parent/add-child" className="group flex flex-col items-center gap-4">
+                        <div
+                            className="flex w-32 items-center justify-center rounded-full border-4 border-dashed border-slate-300 bg-slate-50 text-slate-300 transition-all group-hover:border-primary group-hover:bg-primary/5 group-hover:text-primary group-active:scale-95 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-600 aspect-square md:h-auto"
+                            style={{ width: `${appConfig.parentDashboard.childCardWidthPercentage}%` }}
                         >
-                            {isCreating ? "Creating..." : "Add Child"}
-                        </button>
-                    </form>
-                </section>
-            </div>
+                            <Plus className="h-12 w-12 md:h-24 md:w-24 lg:h-32 lg:w-32" />
+                        </div>
+                        <div className="text-center">
+                            <h3 className="text-xl font-bold text-slate-400 transition-colors group-hover:text-primary md:text-2xl">Add Child</h3>
+                        </div>
+                    </Link>
+                </div>
+            )}
+
+            {/* Empty State Message */}
+            {children && children.length === 0 && (
+                <div className="mt-12 text-center">
+                    <p className="text-lg font-medium text-slate-500">
+                        Welcome! Click the <span className="font-bold text-primary">+</span> button above to add your first child profile.
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

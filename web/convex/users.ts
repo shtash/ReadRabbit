@@ -38,6 +38,7 @@ export const getOrCreateUser = mutation({
             createdAt: Date.now(),
             allowPersonalization: true,
             onboardingCompleted: false,
+            isParentMode: true, // Default to Parent Mode
         });
 
         return await ctx.db.get(userId);
@@ -60,6 +61,49 @@ export const completeOnboarding = mutation({
 
         await ctx.db.patch(user._id, {
             onboardingCompleted: true,
+        });
+    },
+});
+
+// Toggle Parent Mode
+export const toggleParentMode = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        await ctx.db.patch(user._id, {
+            isParentMode: !user.isParentMode,
+        });
+    },
+});
+// Switch Profile (Parent or Child)
+export const switchProfile = mutation({
+    args: {
+        isParentMode: v.boolean(),
+        childId: v.optional(v.id("children")),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Not authenticated");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        await ctx.db.patch(user._id, {
+            isParentMode: args.isParentMode,
+            activeChildId: args.childId,
         });
     },
 });

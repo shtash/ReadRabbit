@@ -11,6 +11,8 @@ export default defineSchema({
         // Settings
         allowPersonalization: v.boolean(),
         onboardingCompleted: v.boolean(),
+        isParentMode: v.boolean(),
+        activeChildId: v.optional(v.id("children")),
     }).index("by_token", ["tokenIdentifier"]),
 
     // Children profiles

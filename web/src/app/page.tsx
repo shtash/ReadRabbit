@@ -11,6 +11,8 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } 
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { OnboardingTutorial } from "@/components/OnboardingTutorial";
+import ParentDashboard from "./parent/page";
+import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 
 export default function Home() {
   const cardWidth = useCardWidth();
@@ -155,6 +157,11 @@ export default function Home() {
   // Get display name
   const displayName = clerkUser?.firstName || clerkUser?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'there';
 
+  // If in Parent Mode, show Parent Dashboard
+  if (convexUser?.isParentMode) {
+    return <ParentDashboard />;
+  }
+
   return (
     <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
       {/* Onboarding Tutorial */}
@@ -190,12 +197,7 @@ export default function Home() {
               </SignUpButton>
             </SignedOut>
             <SignedIn>
-              <Link href="/parent">
-                <button className="rounded-full bg-secondary px-4 py-2 text-sm font-bold text-secondary-foreground transition-transform hover:scale-105 active:scale-95">
-                  Parent Dashboard
-                </button>
-              </Link>
-              <UserButton afterSignOutUrl="/" />
+              <ProfileSwitcher />
             </SignedIn>
           </div>
         </div>
