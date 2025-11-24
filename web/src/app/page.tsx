@@ -4,6 +4,7 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { StoryCard } from "@/components/ui/story-card";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCardWidth } from "@/hooks/useCardWidth";
 import { useDragScroll } from "@/hooks/useDragScroll";
 import { appConfig } from "@/config/app.config";
@@ -212,29 +213,19 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex flex-col gap-8 px-6">
+      <main className="flex flex-col gap-4 px-6">
         {/* Hero Action */}
         <section>
-          <Link href="/read">
-            <div className="group relative w-full overflow-hidden rounded-[2rem] bg-primary p-8 text-left shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 active:scale-95">
-              <div className="relative z-10 flex flex-col gap-2">
-                <div className="flex items-center gap-2 text-primary-foreground/90">
-                  <Sparkles className="h-5 w-5" />
-                  <span className="text-sm font-bold uppercase tracking-wider">
-                    Start New
-                  </span>
-                </div>
-                <h2 className="text-4xl font-black text-primary-foreground">
-                  Let's read!
-                </h2>
-                <p className="max-w-[200px] text-lg font-medium text-primary-foreground/80">
-                  Pick a topic and create a magic story.
-                </p>
-              </div>
-
-              {/* Decorative Circles */}
-              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10 blur-2xl transition-transform group-hover:scale-150" />
-              <div className="absolute -bottom-8 right-8 h-32 w-32 rounded-full bg-white/10 blur-xl" />
+          <Link href="/read" className="block w-1/2 md:w-full md:max-w-md mx-auto">
+            <div className="group relative w-full overflow-hidden rounded-[3rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 active:scale-95">
+              {/* Using standard img tag for debugging */}
+              <img
+                src="/story_time.jpg"
+                alt="Let's read! Story Time"
+                width={800}
+                height={300}
+                className="w-full h-auto object-cover"
+              />
             </div>
           </Link>
         </section>
@@ -293,6 +284,6 @@ export default function Home() {
       </main>
 
       <BottomNav />
-    </div>
+    </div >
   );
 }

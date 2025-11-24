@@ -14,7 +14,7 @@ export const appConfig = {
          * Number of cards visible on mobile devices (can be fractional, e.g., 2.5)
          * This creates a "peek" effect showing part of the next card
          */
-        visibleOnMobile: 2.5,
+        visibleOnMobile: 3.5,
 
         /**
          * Number of cards visible on desktop devices (can be fractional, e.g., 4.5)
