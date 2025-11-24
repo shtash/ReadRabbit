@@ -217,7 +217,7 @@ export default function Home() {
         {/* Hero Action */}
         <section>
           <Link href="/read" className="block w-1/2 md:w-full md:max-w-md mx-auto">
-            <div className="group relative w-full overflow-hidden rounded-[3rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 active:scale-95">
+            <div className="group relative w-full overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/30 active:scale-95">
               {/* Using standard img tag for debugging */}
               <img
                 src="/story_time.jpg"

@@ -9,7 +9,7 @@ interface StoryCardProps {
 
 export function StoryCard({ title, category, color }: StoryCardProps) {
     return (
-        <div className="group relative flex aspect-[4/5] w-full cursor-pointer flex-col justify-end overflow-hidden rounded-3xl bg-muted p-4 transition-transform active:scale-95">
+        <div className="group relative flex aspect-[4/5] w-full cursor-pointer flex-col justify-end overflow-hidden rounded-xl md:rounded-3xl bg-muted p-4 transition-transform active:scale-95">
             {/* Background Placeholder (Gradient for now) */}
             <div
                 className="absolute inset-0 z-0 opacity-80 transition-opacity group-hover:opacity-100"
