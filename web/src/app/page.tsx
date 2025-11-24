@@ -183,7 +183,7 @@ export default function Home() {
       <header className="px-6 pt-4 pb-6 md:pt-12">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
               <SignedOut>
                 Welcome! <span className="text-primary">👋</span>
               </SignedOut>
@@ -196,12 +196,12 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-transform hover:scale-105 active:scale-95">
+                <button className="rounded-full bg-white/90 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-semibold text-black shadow-sm transition-all hover:scale-105 hover:bg-white active:scale-95">
                   Sign In
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button className="rounded-full border-2 border-primary px-4 py-2 text-sm font-bold text-primary transition-transform hover:scale-105 active:scale-95">
+                <button className="rounded-full border border-white/60 bg-transparent px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:border-white hover:bg-white/10 active:scale-95">
                   Sign Up
                 </button>
               </SignUpButton>
@@ -242,7 +242,7 @@ export default function Home() {
           </div>
 
           <div ref={storiesRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
-            <div className="flex gap-4 pb-2">
+            <div className="flex gap-3 md:gap-4 pb-2">
               {stories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
                 <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
                   <StoryCard
@@ -268,7 +268,7 @@ export default function Home() {
           </div>
 
           <div ref={communityRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
-            <div className="flex gap-4 pb-2">
+            <div className="flex gap-3 md:gap-4 pb-2">
               {communityStories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
                 <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
                   <StoryCard
