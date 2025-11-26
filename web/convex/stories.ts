@@ -24,7 +24,7 @@ export const internalCreateStory = internalMutation({
             })
         ),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<string> => {
         const storyId = await ctx.db.insert("stories", {
             childId: args.childId,
             title: args.title,
@@ -109,7 +109,7 @@ export const createStory = action({
 
 export const generateUploadUrl = internalMutation({
     args: {},
-    handler: async (ctx) => {
+    handler: async (ctx): Promise<string> => {
         return await ctx.storage.generateUploadUrl();
     },
 });
@@ -120,7 +120,7 @@ export const updateStoryImage = internalMutation({
         coverImageStorageId: v.optional(v.id("_storage")),
         coverImageUrl: v.optional(v.string()),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<void> => {
         if (args.coverImageUrl) {
             await ctx.db.patch(args.storyId, { coverImageUrl: args.coverImageUrl });
         }
@@ -135,7 +135,7 @@ export const generateStoryImages = action({
         coverImagePrompt: v.optional(v.string()), // New argument
         pages: v.array(v.object({ illustrationPrompt: v.optional(v.string()) })),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<void> => {
         console.log(`[generateStoryImages] Starting for storyId: ${args.storyId}`);
         const imageGenerator = AIProviderFactory.getInstance().getImageGenerator();
 
@@ -212,7 +212,7 @@ export const updateStoryImageWithStorageId = internalMutation({
         storyId: v.id("stories"),
         storageId: v.id("_storage"),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<void> => {
         console.log(`[updateStoryImageWithStorageId] Updating story ${args.storyId} with storageId ${args.storageId}`);
         const url = await ctx.storage.getUrl(args.storageId);
         if (url) {
@@ -229,7 +229,7 @@ export const updateStoryImageWithStorageId = internalMutation({
 // No, internal queries are just not exposed to the public API.
 export const getChildProfileInternal = query({
     args: { childId: v.id("children") },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<any> => {
         return await ctx.db.get(args.childId);
     },
 });
