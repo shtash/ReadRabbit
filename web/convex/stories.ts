@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, query } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { AIProviderFactory } from "./ai/factory";
 
@@ -167,6 +167,100 @@ export const getStory = query({
             ...story,
             pages,
             childName: child?.name
+        };
+    },
+});
+
+export const deleteStory = mutation({
+    args: {
+        storyId: v.id("stories"),
+    },
+    handler: async (ctx, args) => {
+        // 1. Delete story pages
+        const pages = await ctx.db
+            .query("storyPages")
+            .withIndex("by_story", (q) => q.eq("storyId", args.storyId))
+            .collect();
+
+        for (const page of pages) {
+            await ctx.db.delete(page._id);
+        }
+
+        // 2. Delete quizzes and quiz results
+        const quizzes = await ctx.db
+            .query("quizzes")
+            .withIndex("by_story", (q) => q.eq("storyId", args.storyId))
+            .collect();
+
+        for (const quiz of quizzes) {
+            const quizResults = await ctx.db
+                .query("quizResults")
+                .filter((q) => q.eq(q.field("quizId"), quiz._id))
+                .collect();
+
+            for (const result of quizResults) {
+                await ctx.db.delete(result._id);
+            }
+
+            await ctx.db.delete(quiz._id);
+        }
+
+        // 3. Delete reading sessions
+        const sessions = await ctx.db
+            .query("readingSessions")
+            .withIndex("by_story", (q) => q.eq("storyId", args.storyId))
+            .collect();
+
+        for (const session of sessions) {
+            await ctx.db.delete(session._id);
+        }
+
+        // 4. Delete rewards linked to this story
+        const rewards = await ctx.db
+            .query("rewards")
+            .filter((q) => q.eq(q.field("storyId"), args.storyId))
+            .collect();
+
+        for (const reward of rewards) {
+            await ctx.db.delete(reward._id);
+        }
+
+        // 5. Finally, delete the story itself
+        await ctx.db.delete(args.storyId);
+
+        return { success: true, message: "Story and all related data deleted" };
+    },
+});
+
+export const bulkDeleteStories = mutation({
+    args: {
+        storyIds: v.array(v.id("stories")),
+    },
+    handler: async (ctx, args) => {
+        const results = [];
+
+        for (const storyId of args.storyIds) {
+            try {
+                // Reuse the single delete logic
+                const result = await ctx.runMutation(api.stories.deleteStory, { storyId });
+                results.push({ storyId, success: true });
+            } catch (error) {
+                results.push({
+                    storyId,
+                    success: false,
+                    error: error instanceof Error ? error.message : "Unknown error"
+                });
+            }
+        }
+
+        const successCount = results.filter(r => r.success).length;
+        const failCount = results.filter(r => !r.success).length;
+
+        return {
+            total: args.storyIds.length,
+            successful: successCount,
+            failed: failCount,
+            results
         };
     },
 });

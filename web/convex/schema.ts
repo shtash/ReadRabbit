@@ -104,6 +104,19 @@ export default defineSchema({
         completedAt: v.number(),
     }).index("by_child", ["childId"]),
 
+    // Reading Sessions (for future performance metrics)
+    readingSessions: defineTable({
+        childId: v.id("children"),
+        storyId: v.id("stories"),
+        startedAt: v.number(),
+        completedAt: v.optional(v.number()),
+        // Future metrics (not yet implemented)
+        readingSpeed: v.optional(v.number()), // words per minute
+        accuracy: v.optional(v.number()), // % of words tapped/helped
+        comprehension: v.optional(v.number()), // quiz score %
+    }).index("by_child", ["childId"])
+        .index("by_story", ["storyId"]),
+
     // Rewards
     rewards: defineTable({
         childId: v.id("children"),

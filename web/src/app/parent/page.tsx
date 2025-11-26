@@ -20,7 +20,7 @@ export default function ParentDashboard() {
     }, [convexUser, router]);
 
     const handleChildClick = (childId: string) => {
-        router.push(`/profile/${childId}`);
+        router.push(`/parent/edit-child/${childId}`);
     };
 
     return (
@@ -61,7 +61,7 @@ export default function ParentDashboard() {
 
                                 {/* Settings Icon */}
                                 <Link
-                                    href={`/profile/${child._id}`}
+                                    href={`/parent/edit-child/${child._id}`}
                                     onClick={(e: React.MouseEvent) => e.stopPropagation()}
                                     className="absolute top-2 right-2 bg-white dark:bg-slate-800 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-slate-100 dark:hover:bg-slate-700"
                                 >

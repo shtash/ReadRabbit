@@ -1,27 +1,35 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { useRouter } from "next/navigation";
-import { Camera, ChevronLeft, Upload, X, Check, Minus, Plus } from "lucide-react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../../../convex/_generated/api";
+import { useRouter, useParams } from "next/navigation";
+import { Camera, ChevronLeft, X, Check, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Cropper from "react-easy-crop";
 import getCroppedImg, { resizeImage } from "@/lib/imageUtils";
 import { appConfig } from "@readrabbit/config";
+import { Id } from "../../../../../convex/_generated/dataModel";
 import { BirthdatePicker } from "@/components/BirthdatePicker";
 
-export default function AddChildPage() {
+export default function EditChildPage() {
     const router = useRouter();
-    const createChild = useMutation(api.children.createChild);
+    const params = useParams();
+    const childId = params.id as Id<"children">;
+
+    const updateChild = useMutation(api.children.updateChild);
+    const deleteChild = useMutation(api.children.deleteChild);
     const generateUploadUrl = useMutation(api.children.generateUploadUrl);
+    const child = useQuery(api.children.getChild, { childId });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         name: "",
-        gender: "boy", // default
+        gender: "boy",
         birthdate: "",
     });
+
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Photo State
     const [originalPhotoBlob, setOriginalPhotoBlob] = useState<Blob | null>(null);
@@ -36,6 +44,25 @@ export default function AddChildPage() {
     const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // Load existing child data
+    useEffect(() => {
+        if (child && !isLoaded) {
+            const birthdateStr = new Date(child.birthdate).toISOString().split('T')[0];
+            setFormData({
+                name: child.name,
+                gender: child.gender || "boy",
+                birthdate: birthdateStr,
+            });
+
+            if (child.faceImageUrl) {
+                setPhotoPreview(child.faceImageUrl);
+            }
+
+            setIsLoaded(true);
+        }
+    }, [child, isLoaded]);
 
     const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -59,7 +86,6 @@ export default function AddChildPage() {
             try {
                 const croppedImage = await getCroppedImg(tempImageSrc, croppedAreaPixels);
                 if (croppedImage) {
-                    // Resize if needed (though getCroppedImg returns the crop size, we might want to ensure max size)
                     const resizedImage = await resizeImage(
                         croppedImage,
                         appConfig.parentDashboard.maxFaceImageSize,
@@ -95,9 +121,8 @@ export default function AddChildPage() {
             let originalImageStorageId = undefined;
             let faceImageStorageId = undefined;
 
-            // Upload photos if they exist
+            // Upload photos if they were changed
             if (originalPhotoBlob && croppedPhotoBlob) {
-                // Parallel uploads
                 const [originalId, faceId] = await Promise.all([
                     handleUpload(originalPhotoBlob),
                     handleUpload(croppedPhotoBlob)
@@ -108,28 +133,85 @@ export default function AddChildPage() {
 
             const birthdateTimestamp = new Date(formData.birthdate).getTime();
 
-            await createChild({
+            const updates: any = {
+                childId,
                 name: formData.name,
                 gender: formData.gender,
                 birthdate: birthdateTimestamp,
-                readingLevel: "emerging", // Default
-                interests: [],
-                avatarId: "rabbit_1", // Default avatar if no photo
-                originalImageStorageId,
-                faceImageStorageId,
-            });
+            };
+
+            // Only include image updates if new images were uploaded
+            if (originalImageStorageId) updates.originalImageStorageId = originalImageStorageId;
+            if (faceImageStorageId) updates.faceImageStorageId = faceImageStorageId;
+
+            await updateChild(updates);
 
             router.push("/parent");
         } catch (error) {
-            console.error("Failed to create child:", error);
+            console.error("Failed to update child:", error);
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleDelete = async () => {
+        setIsSubmitting(true);
+        try {
+            await deleteChild({ childId });
+            router.push("/parent");
+        } catch (error) {
+            console.error("Failed to delete child:", error);
+            setIsSubmitting(false);
+        }
+    };
+
+    if (child === undefined || !isLoaded) {
+        return (
+            <div className={`${appConfig.layout.workspaceContainer} flex items-center justify-center`}>
+                <p className="text-xl font-medium text-muted-foreground animate-pulse">Loading...</p>
+            </div>
+        );
+    }
+
+    if (child === null) {
+        return (
+            <div className={`${appConfig.layout.workspaceContainer} flex flex-col items-center justify-center gap-4`}>
+                <p className="text-xl font-medium text-slate-500">Child not found</p>
+                <Link href="/parent" className="text-primary hover:underline">Go to Parent Dashboard</Link>
+            </div>
+        );
+    }
+
     return (
         <div className={`${appConfig.layout.workspaceContainer} relative flex flex-col items-center justify-center`}>
-            {/* Cropping Modal - Positioned absolute relative to the workspace container */}
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 rounded-3xl">
+                    <div className="w-[90%] md:w-[400px] rounded-2xl bg-white dark:bg-slate-900 shadow-2xl p-8">
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Delete Profile?</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mb-6">
+                            Are you sure you want to delete {formData.name}'s profile? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="flex-1 rounded-full bg-slate-200 dark:bg-slate-700 py-3 font-bold text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={isSubmitting}
+                                className="flex-1 rounded-full bg-red-500 py-3 font-bold text-white hover:bg-red-600 disabled:opacity-50"
+                            >
+                                {isSubmitting ? "Deleting..." : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Cropping Modal */}
             {isCropping && tempImageSrc && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 rounded-3xl">
                     <div className="relative w-[95%] md:w-[60%] overflow-hidden rounded-2xl bg-slate-900 shadow-2xl">
@@ -182,13 +264,13 @@ export default function AddChildPage() {
                 </div>
             )}
 
-            <div className="w-full md:w-[30%] overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900">
+            <div className="w-full md:w-[60%] overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900">
                 {/* Header */}
                 <div className="relative flex items-center justify-center border-b border-slate-100 p-4 dark:border-slate-800">
                     <Link href="/parent" className="absolute left-4 rounded-full p-2 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <ChevronLeft className="h-6 w-6" />
                     </Link>
-                    <h1 className="text-lg font-bold">Personal Details</h1>
+                    <h1 className="text-lg font-bold">Edit Profile</h1>
                 </div>
 
                 <div className="p-12">
@@ -278,7 +360,17 @@ export default function AddChildPage() {
                             disabled={isSubmitting}
                             className="mt-4 w-full rounded-full bg-orange-500 py-4 text-lg font-bold text-white shadow-lg shadow-orange-500/20 transition-transform hover:bg-orange-600 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:shadow-none"
                         >
-                            {isSubmitting ? "Creating..." : "Done"}
+                            {isSubmitting ? "Saving..." : "Save Changes"}
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                            type="button"
+                            onClick={() => setShowDeleteConfirm(true)}
+                            className="flex items-center justify-center gap-2 w-full rounded-full border-2 border-red-300 bg-transparent py-4 text-lg font-bold text-red-500 transition-transform hover:bg-red-50 hover:scale-[1.02] active:scale-95 dark:border-red-700 dark:hover:bg-red-900/10"
+                        >
+                            <Trash2 className="h-5 w-5" />
+                            Delete Profile
                         </button>
                     </form>
                 </div>

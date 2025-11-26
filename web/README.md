@@ -45,6 +45,57 @@ This pushes your backend functions and schema to the production Convex deploymen
 
 App-wide settings (like card sizes, spacing, etc.) are centralized in `packages/config/app.config.ts`. Edit this file to adjust UI parameters across the app.
 
+## Useful Commands
+
+### Database & Backend Management
+
+**Run Convex functions from terminal:**
+```bash
+npx convex run <function-path> '<json-args>'
+```
+
+**Bulk delete stories:**
+```bash
+# Option 1: Using the script (edit IDs first)
+npx convex run scripts/deleteOldStories
+
+# Option 2: One-liner with specific IDs
+npx convex run api.stories.bulkDeleteStories '{"storyIds": ["id1", "id2"]}'
+```
+
+**Delete a single story (with all related data):**
+```bash
+npx convex run api.stories.deleteStory '{"storyId": "jx74..."}'
+```
+
+**Test story generation:**
+```bash
+npx convex run api.stories.testGeneration '{"theme": "animals"}'
+```
+
+### Database Inspection
+
+**View all tables:**
+Open Convex Dashboard → Data tab
+
+**Query stories for a child:**
+```bash
+npx convex run api.stories.getStoriesForChild '{"childId": "child_id_here"}'
+```
+
+**Get child profiles:**
+```bash
+npx convex run api.children.getChildren
+```
+
+### Development Tips
+
+- Functions in `convex/*.ts` are automatically deployed when Convex dev is running
+- Use `console.log()` in Convex functions to see logs in the terminal running `npm run convex dev`
+- Schema changes require restarting `npm run convex dev`
+- Scripts in `scripts/` folder can be run with `npx convex run scripts/<filename>`
+
+
 
 ## Learn More
 
