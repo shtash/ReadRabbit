@@ -11,7 +11,7 @@ export const generateUploadUrl = internalMutation({
 
 export const testStorageUpload = action({
     args: {},
-    handler: async (ctx) => {
+    handler: async (ctx): Promise<{ success: boolean; storageId: string; url: string | null }> => {
         console.log("Starting storage upload test...");
 
         // 1. Generate Upload URL

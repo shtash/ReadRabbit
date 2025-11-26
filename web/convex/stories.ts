@@ -59,7 +59,7 @@ export const createStory = action({
         sourceMode: v.string(),
         customPromptText: v.optional(v.string()),
     },
-    handler: async (ctx, args) => {
+    handler: async (ctx, args): Promise<string> => {
         // 1. Fetch child profile
         const child = await ctx.runQuery(internal.stories.getChildProfileInternal, { childId: args.childId });
 
