@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ArrowLeft, Cat, Rocket, Ghost, Fish, Car, Music, Sparkles } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -25,7 +25,7 @@ export default function CategoryPage() {
     const childId = searchParams.get("childId");
     const router = useRouter();
     const categories = useQuery(api.categories.getCategoryTiles);
-    const createStory = useMutation(api.stories.createStory);
+    const createStory = useAction(api.stories.createStory);
     const [isGenerating, setIsGenerating] = useState<string | null>(null);
 
     const handleCategorySelect = async (theme: string) => {

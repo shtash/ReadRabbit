@@ -8,9 +8,13 @@
  * @module
  */
 
+import type * as ai_factory from "../ai/factory.js";
+import type * as ai_providers_google from "../ai/providers/google.js";
+import type * as ai_providers_mock from "../ai/providers/mock.js";
 import type * as categories from "../categories.js";
 import type * as characters from "../characters.js";
 import type * as children from "../children.js";
+import type * as debug from "../debug.js";
 import type * as migrations from "../migrations.js";
 import type * as personalization from "../personalization.js";
 import type * as progress from "../progress.js";
@@ -26,9 +30,13 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/factory": typeof ai_factory;
+  "ai/providers/google": typeof ai_providers_google;
+  "ai/providers/mock": typeof ai_providers_mock;
   categories: typeof categories;
   characters: typeof characters;
   children: typeof children;
+  debug: typeof debug;
   migrations: typeof migrations;
   personalization: typeof personalization;
   progress: typeof progress;

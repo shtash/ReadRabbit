@@ -1,6 +1,7 @@
 "use client";
 
-import { BookOpen, Compass, Home, Library, User } from "lucide-react";
+import { BookOpen, Library, User } from "lucide-react";
+import { UserGroupIcon, HomeIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,19 +26,19 @@ export function BottomNav() {
                         className={`group flex flex-col items-center transition-colors ${isActive('/read') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/read') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
-                            <BookOpen className="h-5 w-5" strokeWidth={2.5} />
+                            <BookOpen className="h-7 w-7" strokeWidth={2.5} />
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-wide">Read</span>
                     </Link>
 
                     <Link
-                        href="/explore"
-                        className={`group flex flex-col items-center transition-colors ${isActive('/explore') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                        href="/characters"
+                        className={`group flex flex-col items-center transition-colors ${isActive('/characters') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/explore') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
-                            <Compass className="h-5 w-5" strokeWidth={2.5} />
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/characters') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
+                            <UserGroupIcon className="h-7 w-7" strokeWidth={2.5} />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wide">Explore</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wide">Characters</span>
                     </Link>
 
                     <Link
@@ -45,7 +46,7 @@ export function BottomNav() {
                         className={`group flex flex-col items-center transition-colors ${isActive('/') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
-                            <Home className="h-5 w-5" strokeWidth={2.5} />
+                            <HomeIcon className="h-7 w-7" strokeWidth={2.5} />
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-wide">Home</span>
                     </Link>
@@ -55,9 +56,9 @@ export function BottomNav() {
                         className={`group flex flex-col items-center transition-colors ${isActive('/library') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/library') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
-                            <Library className="h-5 w-5" strokeWidth={2.5} />
+                            <Library className="h-7 w-7" strokeWidth={2.5} />
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wide">Library</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wide">My Library</span>
                     </Link>
 
                     <Link
@@ -65,7 +66,7 @@ export function BottomNav() {
                         className={`group flex flex-col items-center transition-colors ${isActive('/profile') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <div className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-transform group-active:scale-95 ${isActive('/profile') ? 'bg-primary/10 dark:bg-primary/20' : ''}`}>
-                            <User className="h-5 w-5" strokeWidth={2.5} />
+                            <User className="h-7 w-7" strokeWidth={2.5} />
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-wide">Profile</span>
                     </Link>

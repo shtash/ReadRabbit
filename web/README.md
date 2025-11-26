@@ -5,6 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
+# From the project root
 npm run dev
 ```
 
@@ -12,11 +13,11 @@ This runs the frontend at [http://localhost:3000](http://localhost:3000).
 
 **Backend Development (Convex):**
 
-If you are modifying backend code (`convex/` folder) or the schema, you need to run the Convex dev server in a separate terminal:
+If you are modifying backend code (`web/convex/` folder) or the schema, you need to run the Convex dev server in a separate terminal:
 
 ```bash
-# Must be run from the 'web' directory
-npx convex dev
+# From the project root
+npm run convex dev
 ```
 
 This syncs your functions and regenerates types. You do **not** need this running if you are only working on the frontend.
@@ -26,10 +27,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Configuration
-
-App-wide settings (like card sizes, spacing, etc.) are centralized in `src/config/app.config.ts`. Edit this file to adjust UI parameters across the app.
 
 ## Deployment
 
@@ -43,6 +40,10 @@ npx convex deploy
 ```
 
 This pushes your backend functions and schema to the production Convex deployment. Run this before deploying your frontend to ensure your production app uses the latest backend code.
+
+## Configuration
+
+App-wide settings (like card sizes, spacing, etc.) are centralized in `packages/config/app.config.ts`. Edit this file to adjust UI parameters across the app.
 
 
 ## Learn More

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "@/context/ThemeContext";
-import { appConfig } from "@/config/app.config";
+import { appConfig } from "@readrabbit/config";
 
 export function ThemeSwitcher() {
     const { theme, setTheme } = useTheme();
@@ -13,8 +13,8 @@ export function ThemeSwitcher() {
             <button
                 onClick={() => setTheme(modes.dark)}
                 className={`px-3 py-1 rounded-md text-sm transition-colors ${theme === modes.dark
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted text-foreground"
                     }`}
             >
                 Dark
@@ -22,8 +22,8 @@ export function ThemeSwitcher() {
             <button
                 onClick={() => setTheme(modes.light)}
                 className={`px-3 py-1 rounded-md text-sm transition-colors ${theme === modes.light
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted text-foreground"
                     }`}
             >
                 Light
@@ -31,8 +31,8 @@ export function ThemeSwitcher() {
             <button
                 onClick={() => setTheme(modes.white)}
                 className={`px-3 py-1 rounded-md text-sm transition-colors ${theme === modes.white
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted text-foreground"
                     }`}
             >
                 White

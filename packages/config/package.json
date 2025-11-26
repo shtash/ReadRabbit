@@ -1,8 +1,8 @@
 {
     "name": "@readrabbit/config",
     "version": "0.1.0",
-    "main": "index.ts",
-    "types": "index.ts",
+    "main": "app.config.ts",
+    "types": "app.config.ts",
     "scripts": {
         "lint": "echo 'linting config'"
     },

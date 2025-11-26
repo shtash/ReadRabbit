@@ -9,6 +9,7 @@
     "scripts": {
         "dev": "npm run dev --workspace=web",
         "build": "npm run build --workspaces",
-        "lint": "npm run lint --workspaces"
+        "lint": "npm run lint --workspaces",
+        "convex": "npm run convex --workspace=web"
     }
 }

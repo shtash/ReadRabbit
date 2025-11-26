@@ -8,7 +8,7 @@ import { Camera, ChevronLeft, Upload, X, Check, Minus, Plus, Calendar } from "lu
 import Link from "next/link";
 import Cropper from "react-easy-crop";
 import getCroppedImg, { resizeImage } from "@/lib/imageUtils";
-import { appConfig } from "@/config/app.config";
+import { appConfig } from "@readrabbit/config";
 
 export default function AddChildPage() {
     const router = useRouter();

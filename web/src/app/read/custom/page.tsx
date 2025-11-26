@@ -3,9 +3,9 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowLeft, Mic, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, Mic, Send, Sparkles, Wand2 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export default function CustomStoryPage() {
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
     const router = useRouter();
-    const createStory = useMutation(api.stories.createStory);
+    const createStory = useAction(api.stories.createStory);
     const [prompt, setPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
 

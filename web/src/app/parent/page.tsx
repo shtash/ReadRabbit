@@ -5,7 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import Link from "next/link";
 import { Plus, Settings } from "lucide-react";
-import { appConfig } from "@/config/app.config";
+import { appConfig } from "@readrabbit/config";
 import { useRouter } from "next/navigation";
 
 export default function ParentDashboard() {

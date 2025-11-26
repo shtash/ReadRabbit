@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { appConfig } from '@/config/app.config';
+import { appConfig } from "@readrabbit/config";
 
 type ThemeMode = 'dark' | 'light' | 'white';
 

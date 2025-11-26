@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { appConfig } from "@/config/app.config";
+import { appConfig } from "@readrabbit/config";
 
 /**
  * Custom hook to calculate card width based on viewport and configuration

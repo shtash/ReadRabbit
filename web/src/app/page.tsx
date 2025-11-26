@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCardWidth } from "@/hooks/useCardWidth";
 import { useDragScroll } from "@/hooks/useDragScroll";
-import { appConfig } from "@/config/app.config";
+import { appConfig } from "@readrabbit/config";
 import { useState, useEffect } from "react";
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
