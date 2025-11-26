@@ -1,10 +1,8 @@
 import { v } from "convex/values";
-import { action, internalMutation, query } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { action, query } from "./_generated/server";
+import { api, internal } from "./_generated/api";
 import { AIProviderFactory } from "./ai/factory";
 
-// Internal mutation to save the generated story to the database
-// Internal mutation to save the generated story to the database
 export const createStory = action({
     args: {
         childId: v.id("children"),
@@ -49,11 +47,11 @@ export const createStory = action({
         });
 
         // 4. Schedule Background Image Generation
-        await ctx.scheduler.runAfter(0, internal.stories.generateStoryImages, {
+        await ctx.scheduler.runAfter(0, api.stories.generateStoryImages, {
             storyId,
             theme: args.theme,
             title: generatedStory.title,
-            coverImagePrompt: (generatedStory as any).coverImagePrompt, // Cast to any or update type definition
+            coverImagePrompt: generatedStory.coverImagePrompt,
             pages: generatedStory.pages.map(p => ({ illustrationPrompt: p.illustrationPrompt })),
         });
 

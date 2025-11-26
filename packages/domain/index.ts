@@ -72,6 +72,7 @@ export interface StoryGenerationParams {
 
 export interface GeneratedStory {
   title: string;
+  coverImagePrompt?: string;
   pages: {
     text: string;
     illustrationPrompt?: string;

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
 
 // Internal mutation to save the generated story to the database
 export const internalCreateStory = internalMutation({
@@ -21,7 +22,7 @@ export const internalCreateStory = internalMutation({
             })
         ),
     },
-    handler: async (ctx, args): Promise<string> => {
+    handler: async (ctx, args): Promise<Id<"stories">> => {
         const storyId = await ctx.db.insert("stories", {
             childId: args.childId,
             title: args.title,
@@ -85,7 +86,7 @@ export const updateStoryImageWithStorageId = internalMutation({
     },
 });
 
-export const getChildProfileInternal = query({
+export const getChildProfileInternal = internalQuery({
     args: { childId: v.id("children") },
     handler: async (ctx, args): Promise<any> => {
         return await ctx.db.get(args.childId);
