@@ -5,52 +5,6 @@ import { AIProviderFactory } from "./ai/factory";
 
 // Internal mutation to save the generated story to the database
 // Internal mutation to save the generated story to the database
-export const internalCreateStory = internalMutation({
-    args: {
-        childId: v.id("children"),
-        title: v.string(),
-        theme: v.string(),
-        readingLevel: v.string(),
-        personalizationMode: v.string(),
-        sourceMode: v.string(),
-        customPromptText: v.optional(v.string()),
-        coverImageUrl: v.optional(v.string()), // Can be null initially
-        pages: v.array(
-            v.object({
-                pageIndex: v.number(),
-                text: v.string(),
-                illustrationUrl: v.optional(v.string()),
-                illustrationPrompt: v.optional(v.string()),
-            })
-        ),
-    },
-    handler: async (ctx, args): Promise<string> => {
-        const storyId = await ctx.db.insert("stories", {
-            childId: args.childId,
-            title: args.title,
-            theme: args.theme,
-            readingLevel: args.readingLevel,
-            createdAt: Date.now(),
-            personalizationMode: args.personalizationMode,
-            sourceMode: args.sourceMode,
-            customPromptText: args.customPromptText,
-            coverImageUrl: args.coverImageUrl,
-        });
-
-        for (const page of args.pages) {
-            await ctx.db.insert("storyPages", {
-                storyId,
-                pageIndex: page.pageIndex,
-                text: page.text,
-                illustrationUrl: page.illustrationUrl,
-                // We might want to store the prompt too if needed for debugging or regeneration
-            });
-        }
-
-        return storyId;
-    },
-});
-
 export const createStory = action({
     args: {
         childId: v.id("children"),
@@ -61,7 +15,7 @@ export const createStory = action({
     },
     handler: async (ctx, args): Promise<string> => {
         // 1. Fetch child profile
-        const child = await ctx.runQuery(internal.stories.getChildProfileInternal, { childId: args.childId });
+        const child = await ctx.runQuery(internal.storyInternal.getChildProfileInternal, { childId: args.childId });
 
         if (!child) {
             throw new Error("Child not found");
@@ -78,7 +32,7 @@ export const createStory = action({
         });
 
         // 3. Save to DB (Text Only first)
-        const storyId = await ctx.runMutation(internal.stories.internalCreateStory, {
+        const storyId = await ctx.runMutation(internal.storyInternal.internalCreateStory, {
             childId: args.childId,
             title: generatedStory.title,
             theme: args.theme,
@@ -104,26 +58,6 @@ export const createStory = action({
         });
 
         return storyId;
-    },
-});
-
-export const generateUploadUrl = internalMutation({
-    args: {},
-    handler: async (ctx): Promise<string> => {
-        return await ctx.storage.generateUploadUrl();
-    },
-});
-
-export const updateStoryImage = internalMutation({
-    args: {
-        storyId: v.id("stories"),
-        coverImageStorageId: v.optional(v.id("_storage")),
-        coverImageUrl: v.optional(v.string()),
-    },
-    handler: async (ctx, args): Promise<void> => {
-        if (args.coverImageUrl) {
-            await ctx.db.patch(args.storyId, { coverImageUrl: args.coverImageUrl });
-        }
     },
 });
 
@@ -157,7 +91,7 @@ export const generateStoryImages = action({
             // Upload to Convex Storage
             if (base64Image.startsWith("data:")) {
                 console.log(`[generateStoryImages] Uploading to Convex Storage...`);
-                const uploadUrl = await ctx.runMutation(internal.stories.generateUploadUrl);
+                const uploadUrl = await ctx.runMutation(internal.storyInternal.generateUploadUrl);
 
                 // Manual base64 to Blob conversion since fetch(data:...) is not supported
                 const matches = base64Image.match(/^data:(.+);base64,(.+)$/);
@@ -188,14 +122,14 @@ export const generateStoryImages = action({
                 const { storageId } = await result.json();
                 console.log(`[generateStoryImages] Upload successful. StorageId: ${storageId}`);
 
-                await ctx.runMutation(internal.stories.updateStoryImageWithStorageId, {
+                await ctx.runMutation(internal.storyInternal.updateStoryImageWithStorageId, {
                     storyId: args.storyId,
                     storageId,
                 });
             } else {
                 console.log(`[generateStoryImages] Using direct URL: ${base64Image}`);
                 // Handle regular URL (e.g. placeholder)
-                await ctx.runMutation(internal.stories.updateStoryImage, {
+                await ctx.runMutation(internal.storyInternal.updateStoryImage, {
                     storyId: args.storyId,
                     coverImageUrl: base64Image,
                 });
@@ -204,33 +138,6 @@ export const generateStoryImages = action({
         } catch (e) {
             console.error("[generateStoryImages] Failed to generate/upload cover image", e);
         }
-    },
-});
-
-export const updateStoryImageWithStorageId = internalMutation({
-    args: {
-        storyId: v.id("stories"),
-        storageId: v.id("_storage"),
-    },
-    handler: async (ctx, args): Promise<void> => {
-        console.log(`[updateStoryImageWithStorageId] Updating story ${args.storyId} with storageId ${args.storageId}`);
-        const url = await ctx.storage.getUrl(args.storageId);
-        if (url) {
-            await ctx.db.patch(args.storyId, { coverImageUrl: url });
-            console.log(`[updateStoryImageWithStorageId] Updated coverImageUrl: ${url}`);
-        } else {
-            console.error(`[updateStoryImageWithStorageId] Failed to get URL for storageId ${args.storageId}`);
-        }
-    },
-});
-
-// Internal query to fetch child profile without auth checks (since action is already authenticated or trusted)
-// Actually, actions run with the user's identity if called from client, but runQuery internal skips some checks?
-// No, internal queries are just not exposed to the public API.
-export const getChildProfileInternal = query({
-    args: { childId: v.id("children") },
-    handler: async (ctx, args): Promise<any> => {
-        return await ctx.db.get(args.childId);
     },
 });
 

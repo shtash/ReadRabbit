@@ -21,6 +21,7 @@ import type * as progress from "../progress.js";
 import type * as quizzes from "../quizzes.js";
 import type * as rewards from "../rewards.js";
 import type * as stories from "../stories.js";
+import type * as storyInternal from "../storyInternal.js";
 import type * as users from "../users.js";
 
 import type {
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   quizzes: typeof quizzes;
   rewards: typeof rewards;
   stories: typeof stories;
+  storyInternal: typeof storyInternal;
   users: typeof users;
 }>;
 
