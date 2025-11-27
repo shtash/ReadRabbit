@@ -33,3 +33,5 @@ export interface StoryGenerator {
 export interface ImageGenerator {
     generateImage(params: ImageGenerationParams): Promise<string>;
 }
+
+export type AIProviderType = 'google' | 'mock' | 'openai' | 'anthropic';
