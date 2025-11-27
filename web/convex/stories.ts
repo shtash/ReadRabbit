@@ -44,6 +44,7 @@ export const createStory = action({
                 pageIndex: i,
                 illustrationUrl: undefined, // No image yet
             })),
+            quizQuestions: generatedStory.quizQuestions,
         });
 
         // 4. Schedule Background Image Generation

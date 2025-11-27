@@ -144,16 +144,37 @@ export default function CustomStoryPage() {
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder="Or type your story idea here..."
-                        className="min-h-[200px] w-full resize-none rounded-3xl border-2 border-muted bg-background p-6 text-lg font-medium placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                        className="min-h-[200px] w-full resize-none rounded-3xl border-2 border-orange-200 bg-orange-50/50 p-6 text-lg font-medium placeholder:text-muted-foreground focus:border-orange-400 focus:ring-4 focus:ring-orange-100 focus:outline-none dark:bg-card/50 dark:border-orange-900/30"
                     />
-                    <button
-                        onClick={handleGenerate}
-                        disabled={isGenerating || !prompt.trim()}
-                        className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-110 active:scale-95 disabled:opacity-50"
-                    >
-                        {isGenerating ? <Sparkles className="h-6 w-6 animate-spin" /> : <Send className="h-6 w-6" />}
-                    </button>
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            onClick={handleGenerate}
+                            disabled={isGenerating || !prompt.trim()}
+                            className="group relative flex h-16 w-auto items-center justify-center gap-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-10 text-2xl font-bold text-white shadow-xl shadow-orange-500/20 transition-all hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/40 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                            <span>Create Story!</span>
+                            <Sparkles className="h-6 w-6 animate-pulse" />
+                        </button>
+                    </div>
                 </div>
+
+                {/* Full Screen Loading Overlay */}
+                {isGenerating && (
+                    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md transition-all animate-in fade-in duration-300">
+                        <div className="relative mb-8">
+                            <div className="absolute inset-0 animate-ping rounded-full bg-orange-400 opacity-20"></div>
+                            <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-pink-500 shadow-2xl">
+                                <Wand2 className="h-16 w-16 text-white animate-pulse" />
+                            </div>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-600 animate-pulse">
+                            Writing your story...
+                        </h2>
+                        <p className="mt-4 text-lg text-muted-foreground font-medium">
+                            Adding some magic sprinkles! ✨
+                        </p>
+                    </div>
+                )}
             </main>
         </div>
     );

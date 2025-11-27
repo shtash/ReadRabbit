@@ -85,7 +85,7 @@ export default function StoryPage() {
 
                 <button
                     onClick={handleFinish}
-                    className="flex h-16 w-full max-w-md items-center justify-center gap-2 rounded-full bg-green-500 text-xl font-bold text-white shadow-xl transition-all hover:bg-green-600 active:scale-95"
+                    className="flex h-12 w-auto max-w-md items-center justify-center gap-2 rounded-full bg-green-500 px-8 text-xl font-bold text-white shadow-xl transition-all hover:bg-green-600 active:scale-95"
                 >
                     <span>Take Quiz</span>
                     <Check className="h-6 w-6" />
@@ -99,7 +99,7 @@ export default function StoryPage() {
     return (
         <div className="mx-auto min-h-screen w-full bg-background font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             {/* Header */}
-            <header className="flex items-center justify-between px-6 pt-8 pb-4">
+            <header className="flex items-center justify-between px-6 pt-2 pb-4">
                 <Link
                     href={`/read?childId=${story.childId}`}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
@@ -113,8 +113,8 @@ export default function StoryPage() {
             </header>
 
             {/* Content - Text Only */}
-            <main className="flex flex-1 flex-col items-center justify-center px-6 py-8">
-                <div className="w-full rounded-3xl bg-card p-8 shadow-sm dark:bg-card/50 md:p-12">
+            <main className="flex flex-1 flex-col items-center justify-center px-6 py-2 pb-32">
+                <div className="w-full rounded-3xl bg-card p-6 shadow-sm dark:bg-card/50 md:p-12">
                     <p className="text-2xl font-medium leading-relaxed text-foreground md:text-4xl md:leading-loose">
                         {currentPageData.text}
                     </p>
@@ -135,7 +135,7 @@ export default function StoryPage() {
 
                     <button
                         onClick={handleNext}
-                        className="flex h-20 flex-1 items-center justify-center gap-2 rounded-[2rem] bg-primary text-xl font-bold text-white shadow-xl transition-all hover:bg-primary/90 active:scale-95"
+                        className="flex h-12 w-auto items-center justify-center gap-2 rounded-[2rem] bg-gradient-to-r from-orange-700/60 to-orange-600/60 px-8 text-xl font-bold text-white shadow-xl backdrop-blur-md border border-white/20 transition-all hover:from-orange-700 hover:to-orange-600 active:scale-95"
                     >
                         {isLastPage ? (
                             <>

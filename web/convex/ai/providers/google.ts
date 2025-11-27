@@ -36,7 +36,7 @@ export class GoogleStoryGenerator implements StoryGenerator {
             ${params.characters ? `- Characters: ${params.characters.map(c => `${c.name} (${c.type})`).join(", ")}` : ""}
             ${params.customPrompt ? `- Custom Request: ${params.customPrompt}` : ""}
 
-            Output the story as a JSON object with this exact structure:
+            Output the story as a RAW JSON object with this exact structure. Do not include any markdown formatting or code blocks:
             {
                 "title": "Story Title",
                 "coverImagePrompt": "A highly descriptive prompt for an AI image generator to create a cover image. It should describe a specific scene capturing an important event in the story, including the appearance of the main characters and the setting. Style: colorful, friendly, storybook illustration.",
@@ -45,10 +45,18 @@ export class GoogleStoryGenerator implements StoryGenerator {
                         "text": "Page text...",
                         "illustrationPrompt": "Description for the illustration..."
                     }
+                ],
+                "quizQuestions": [
+                    {
+                        "question": "Question text...",
+                        "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                        "correctAnswerIndex": 0
+                    }
                 ]
             }
             Create 3-5 pages. Ensure the content is safe, age-appropriate, and engaging.
-            For the illustration description, pick out an important scene from the story and describe an image to go along with it. Make sure any characters' age and gender and/or any animal types match the story. It should be depict a scene from the story, not the characters posing.  No text.
+            Generate 3 simple multiple-choice comprehension questions based on the story.
+            For the illustration description, pick out an important scene from the story and describe an image to go along with it. Make sure any characters' age and gender and/or any animal types match the story. It should be depict a scene from the story, not the characters posing.  Do not put any text in the image.
         `;
 
         console.log("Generating story with prompt:", prompt);
@@ -56,9 +64,11 @@ export class GoogleStoryGenerator implements StoryGenerator {
         try {
             const result = await model.generateContent(prompt);
             const response = await result.response;
-            const text = response.text();
-
+            let text = response.text();
             console.log("AI Response:", text);
+
+            // Clean up potential markdown formatting
+            text = text.replace(/```json\n?|\n?```/g, "").trim();
 
             const storyData = JSON.parse(text) as GeneratedStory;
 

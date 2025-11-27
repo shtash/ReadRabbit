@@ -71,6 +71,7 @@ export default defineSchema({
         text: v.string(),
         audioUrl: v.optional(v.string()),
         illustrationUrl: v.optional(v.string()),
+        illustrationPrompt: v.optional(v.string()),
     }).index("by_story", ["storyId"]),
 
     // Quizzes
