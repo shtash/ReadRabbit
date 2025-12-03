@@ -41,12 +41,15 @@ export default defineSchema({
     // Characters (Family, Pets, Friends)
     characters: defineTable({
         childId: v.id("children"),
-        type: v.string(), // 'self' | 'family' | 'pet' | 'friend' | 'other'
+        type: v.string(), // 'boy', 'girl', 'cat', 'dog', 'other' (or custom)
         name: v.string(),
-        age: v.optional(v.number()),
-        gender: v.optional(v.string()),
+        birthYear: v.number(),
+        birthMonth: v.optional(v.number()),
+        birthDay: v.optional(v.number()),
         avatarImageUrl: v.optional(v.string()),
         photoRefId: v.optional(v.string()), // for personalization
+        originalImageStorageId: v.optional(v.id("_storage")),
+        faceImageStorageId: v.optional(v.id("_storage")),
         createdAt: v.number(),
         updatedAt: v.number(),
     }).index("by_child", ["childId"]),

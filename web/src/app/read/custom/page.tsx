@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ArrowLeft, Mic, Sparkles, Wand2 } from "lucide-react";
+import { BottomNav } from "@/components/ui/bottom-nav";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -120,7 +121,7 @@ export default function CustomStoryPage() {
         <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             <header className="flex items-center gap-4 px-6 pt-12 pb-6">
                 <Link
-                    href={`/ read ? childId = ${childId} `}
+                    href={`/read?childId=${childId}`}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
                 >
                     <ArrowLeft className="h-6 w-6" />
@@ -191,6 +192,7 @@ export default function CustomStoryPage() {
                     </div>
                 )}
             </main>
+            <BottomNav />
         </div>
     );
 }
