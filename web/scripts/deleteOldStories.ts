@@ -18,7 +18,7 @@ interface DeleteResult {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default async ({ runMutation }: any) => {
+const deleteOldStories = async ({ runMutation }: any) => {
     if (storyIdsToDelete.length === 0) {
         console.log("No stories to delete. Update the script with IDs.");
         return;
@@ -46,3 +46,5 @@ export default async ({ runMutation }: any) => {
 
     return result;
 };
+
+export default deleteOldStories;
