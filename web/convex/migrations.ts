@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 
 /**
  * Manually create a user by email (for testing/migration)
@@ -82,9 +83,9 @@ export const resetOnboarding = mutation({
             usersToUpdate = allUsers.slice(0, 1);
         }
 
-        let updatedCount = 0;
+
         for (const user of usersToUpdate) {
-            const updates: Record<string, any> = {
+            const updates: Partial<Doc<"users">> = {
                 onboardingCompleted: false,
             };
 
@@ -100,7 +101,6 @@ export const resetOnboarding = mutation({
 
             if (Object.keys(updates).length > 0) {
                 await ctx.db.patch(user._id, updates);
-                updatedCount++;
             }
         }
 
@@ -142,6 +142,7 @@ export const resetField = mutation({
         for (const user of usersToUpdate) {
             await ctx.db.patch(user._id, {
                 [field]: value,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
         }
 
@@ -165,7 +166,7 @@ export const addMissingFields = mutation({
         let updatedCount = 0;
 
         for (const user of allUsers) {
-            const updates: any = {};
+            const updates: Partial<Doc<"users">> = {};
 
             // Add onboardingCompleted if missing
             if (user.onboardingCompleted === undefined) {

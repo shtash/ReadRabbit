@@ -1,6 +1,8 @@
 import { GoogleImageGenerator } from "../convex/ai/providers/google";
 import { ImageGenerationParams } from "@readrabbit/domain";
 import dotenv from "dotenv";
+import * as fs from "fs";
+import * as path from "path";
 
 dotenv.config({ path: "web/.env.local" });
 
@@ -23,8 +25,6 @@ async function main() {
         console.log("Successfully generated image.");
 
         if (imageUrl.startsWith("data:image")) {
-            const fs = require("fs");
-            const path = require("path");
             const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
             const buffer = Buffer.from(base64Data, 'base64');
             const outputPath = path.join(process.cwd(), "web", "public", "test-image.png");

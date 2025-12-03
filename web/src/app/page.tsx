@@ -1,17 +1,17 @@
+
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { StoryCard } from "@/components/ui/story-card";
-import { Sparkles } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useCardWidth } from "@/hooks/useCardWidth";
 import { useDragScroll } from "@/hooks/useDragScroll";
 import { appConfig } from "@readrabbit/config";
-import { useState, useEffect } from "react";
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { useUser, SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useEffect, useState } from "react";
 import { OnboardingTutorial } from "@/components/OnboardingTutorial";
 import ParentDashboard from "./parent/page";
 import { ProfileSwitcher } from "@/components/ProfileSwitcher";
@@ -43,6 +43,7 @@ export default function Home() {
     };
     createUser();
   }, [isLoaded, clerkUser, convexUser, getOrCreateUser]);
+
   const stories = [
     {
       title: "The Rabbit's Moon Adventure",
@@ -152,11 +153,12 @@ export default function Home() {
   // Show onboarding for new users
   useEffect(() => {
     if (isLoaded && clerkUser && convexUser) {
-      if (!convexUser.onboardingCompleted) {
+      if (!convexUser.onboardingCompleted && !showOnboarding) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setShowOnboarding(true);
       }
     }
-  }, [isLoaded, clerkUser, convexUser]);
+  }, [isLoaded, clerkUser, convexUser, showOnboarding]);
 
   // Get children data for child mode name
   const children = useQuery(api.children.getChildren);

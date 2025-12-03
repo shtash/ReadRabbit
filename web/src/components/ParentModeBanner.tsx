@@ -28,6 +28,9 @@ export function ParentModeBanner() {
                     <div className="flex items-center gap-2">
                         <ShieldCheck className="h-5 w-5 text-emerald-400" />
                         <span className="text-sm font-bold uppercase tracking-wider">Parent Mode Active</span>
+                        <p className="text-sm text-muted-foreground">
+                            You&apos;re in Parent Mode. You can manage profiles and settings.
+                        </p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -58,7 +61,7 @@ export function ParentModeBanner() {
                         </h3>
 
                         <p className="mb-6 text-center text-sm text-slate-600 dark:text-slate-400">
-                            Are you sure you want to sign out? You'll need to sign in again to access your account.
+                            Are you sure you want to sign out? You&apos;ll need to sign in again to access your account.
                         </p>
 
                         <div className="flex gap-3">

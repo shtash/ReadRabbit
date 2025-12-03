@@ -12,8 +12,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ShieldCheck, User, Plus } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { Id } from "../../convex/_generated/dataModel";
 
 export function ProfileSwitcher() {
     const router = useRouter();
@@ -34,7 +36,7 @@ export function ProfileSwitcher() {
     const handleSwitch = async (isParent: boolean, childId?: string) => {
         await switchProfile({
             isParentMode: isParent,
-            childId: childId as any,
+            childId: childId as Id<"children">,
         });
         router.push("/");
     };

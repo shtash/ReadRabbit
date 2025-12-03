@@ -1,7 +1,9 @@
+
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "convex/react";
@@ -68,10 +70,11 @@ export default function StoryPage() {
 
                 <div className="mb-8 aspect-square w-full max-w-md overflow-hidden rounded-3xl bg-muted shadow-2xl relative">
                     {story.coverImageUrl ? (
-                        <img
+                        <Image
                             src={story.coverImageUrl}
                             alt="Reward"
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
                         />
                     ) : (
                         <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-muted/50">

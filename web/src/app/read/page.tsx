@@ -6,21 +6,25 @@ import Link from "next/link";
 import { Sparkles, Grid, Mic } from "lucide-react";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useMutation, useQuery, useAction } from "convex/react";
+import { useQuery, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
+
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function ReadPage() {
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
     const convexUser = useQuery(api.users.getCurrentUser);
 
-    // Determine effective childId: URL param > Active Child in DB
-    const effectiveChildId = childId || (convexUser && !convexUser.isParentMode ? convexUser.activeChildId : null);
-
     const router = useRouter();
     const createStory = useAction(api.stories.createStory);
     const [isGenerating, setIsGenerating] = useState(false);
+    const testGen = useAction(api.stories.testGeneration);
+    const [debugOutput, setDebugOutput] = useState<string | null>(null);
+
+    // Determine effective childId: URL param > Active Child in DB
+    const effectiveChildId = childId || (convexUser && !convexUser.isParentMode ? convexUser.activeChildId : null);
 
     const handleAutoMode = async (cId: string | null) => {
         if (!cId) {
@@ -30,7 +34,7 @@ export default function ReadPage() {
         setIsGenerating(true);
         try {
             const storyId = await createStory({
-                childId: cId as any,
+                childId: cId as Id<"children">,
                 theme: "random",
                 personalizationMode: "none",
                 sourceMode: "auto",
@@ -41,6 +45,16 @@ export default function ReadPage() {
             alert("Something went wrong!");
         } finally {
             setIsGenerating(false);
+        }
+    };
+
+    const handleDebug = async () => {
+        setDebugOutput("Testing AI...");
+        try {
+            const result = await testGen({ theme: "robots" });
+            setDebugOutput(JSON.stringify(result, null, 2));
+        } catch (e: unknown) {
+            setDebugOutput("Error: " + (e instanceof Error ? e.message : String(e)));
         }
     };
 
@@ -61,18 +75,7 @@ export default function ReadPage() {
         );
     }
 
-    const testGen = useAction(api.stories.testGeneration);
-    const [debugOutput, setDebugOutput] = useState<string | null>(null);
 
-    const handleDebug = async () => {
-        setDebugOutput("Testing AI...");
-        try {
-            const result = await testGen({ theme: "robots" });
-            setDebugOutput(JSON.stringify(result, null, 2));
-        } catch (e: any) {
-            setDebugOutput("Error: " + e.message);
-        }
-    };
 
     return (
         <div className="mx-auto flex min-h-screen w-full flex-col justify-center bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">

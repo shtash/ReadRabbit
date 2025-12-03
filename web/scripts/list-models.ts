@@ -11,7 +11,7 @@ async function main() {
         process.exit(1);
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+    // const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
     // Note: listModels is not directly on GoogleGenerativeAI instance in some versions, 
     // but let's try to see if we can get it via the model manager or similar.
     // Actually, looking at the docs, it might be via a separate ModelService or just not exposed easily in the high-level SDK.
@@ -27,8 +27,13 @@ async function main() {
         const response = await fetch(url);
         const data = await response.json();
         console.log("Available Models:");
+        interface Model {
+            name: string;
+            supportedGenerationMethods: string[];
+        }
+
         if (data.models) {
-            data.models.forEach((m: any) => {
+            data.models.forEach((m: Model) => {
                 console.log(`- ${m.name} (${m.supportedGenerationMethods.join(", ")})`);
             });
         } else {

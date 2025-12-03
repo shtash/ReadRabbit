@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useUser } from "@/context/UserContext";
-import { Check, Plus, User as UserIcon, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface UserSwitcherProps {
     isOpen: boolean;
@@ -53,12 +55,13 @@ export function UserSwitcher({ isOpen, onClose }: UserSwitcherProps) {
                                         : "hover:bg-muted text-foreground"
                                         }`}
                                 >
-                                    <div className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${currentUser?.id === user.id ? "border-primary" : "border-transparent bg-muted"
+                                    <div className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 ${currentUser?.id === user.id ? "border-primary" : "border-transparent bg-muted"
                                         }`}>
-                                        <img
+                                        <Image
                                             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.avatarSeed}`}
                                             alt={user.name}
-                                            className="h-full w-full rounded-full object-cover"
+                                            fill
+                                            className="rounded-full object-cover"
                                         />
                                     </div>
                                     <div className="flex flex-1 flex-col items-start">

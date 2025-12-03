@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ProfilePage() {
-    const { user } = useUser();
+    const { } = useUser();
     const convexUser = useQuery(api.users.getCurrentUser);
     const router = useRouter();
 
@@ -42,7 +42,7 @@ export default function ProfilePage() {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-4 text-center">
             <h1 className="text-3xl font-bold text-foreground">Parent Mode Active</h1>
-            <p className="text-muted-foreground">You are currently in Parent Mode.</p>
+            <p className="mb-8 text-muted-foreground">You&apos;re in Parent Mode. Switch to a child profile to see their stats.</p>
             <div className="flex gap-4">
                 <Link href="/parent">
                     <button className="rounded-full bg-primary px-6 py-3 font-bold text-primary-foreground transition-transform hover:scale-105">
@@ -56,7 +56,7 @@ export default function ProfilePage() {
                 </Link>
             </div>
             <p className="mt-8 text-sm text-muted-foreground">
-                To view a child's profile, switch to their account using the menu in the top right.
+                To view a child&apos;s profile, switch to their account using the menu in the top right.
             </p>
         </div>
     );

@@ -4,16 +4,26 @@
 import { api } from "../convex/_generated/api";
 
 // Replace these with the actual IDs from your Convex dashboard
-const storyIdsToDelete = [
-    "jx74..." as any, // Replace with actual IDs
-    "jy7fwv2pg9y8l1HF..." as any,
-    "jy7fwvV8Yvgx9BBz..." as any,
-    "jy7fu0M3KHmDkb8..." as any,
-    "jy7f0mb3a3Z9gH8..." as any,
-    // Add more IDs as needed
+import { Id } from "../convex/_generated/dataModel";
+
+// Replace these with the actual IDs from your Convex dashboard
+const storyIdsToDelete: Id<"stories">[] = [
+    // "jx74..." as Id<"stories">, // Replace with actual IDs
 ];
 
+interface DeleteResult {
+    storyId: Id<"stories">;
+    success: boolean;
+    error?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async ({ runMutation }: any) => {
+    if (storyIdsToDelete.length === 0) {
+        console.log("No stories to delete. Update the script with IDs.");
+        return;
+    }
+
     console.log(`Deleting ${storyIdsToDelete.length} stories...`);
 
     const result = await runMutation(api.stories.bulkDeleteStories, {
@@ -28,8 +38,8 @@ export default async ({ runMutation }: any) => {
     if (result.failed > 0) {
         console.log("\nFailed deletions:");
         result.results
-            .filter((r: any) => !r.success)
-            .forEach((r: any) => {
+            .filter((r: DeleteResult) => !r.success)
+            .forEach((r: DeleteResult) => {
                 console.log(`  ${r.storyId}: ${r.error}`);
             });
     }

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async (ctx) => {
     // Generate a short-lived upload URL
@@ -184,7 +185,7 @@ export const updateChild = mutation({
             throw new Error("Child not found or unauthorized");
         }
 
-        const updates: any = {};
+        const updates: Partial<Doc<"children">> = {};
         if (args.name !== undefined) updates.name = args.name;
         if (args.gender !== undefined) updates.gender = args.gender;
         if (args.birthdate !== undefined) {

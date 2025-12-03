@@ -1,4 +1,3 @@
-import { v } from "convex/values";
 import { query } from "./_generated/server";
 
 // Placeholder for category tiles. In real implementation, this might fetch from DB or generate via AI.

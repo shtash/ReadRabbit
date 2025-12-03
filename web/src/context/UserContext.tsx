@@ -32,8 +32,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const savedUserId = localStorage.getItem('currentUserId');
         const foundUser = users.find(u => u.id === savedUserId);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCurrentUser(foundUser || users[0]);
-    }, []);
+    }, [users]);
 
     const addUser = (name: string, isParent: boolean = false) => {
         const newUser: User = {

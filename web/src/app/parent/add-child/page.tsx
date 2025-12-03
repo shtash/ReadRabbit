@@ -1,15 +1,24 @@
+
 "use client";
 
 import { useState, useRef, useCallback } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
-import { Camera, ChevronLeft, Upload, X, Check, Minus, Plus } from "lucide-react";
+import { Camera, ChevronLeft, X, Check, Minus, Plus } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Cropper from "react-easy-crop";
 import getCroppedImg, { resizeImage } from "@/lib/imageUtils";
 import { appConfig } from "@readrabbit/config";
 import { BirthdatePicker } from "@/components/BirthdatePicker";
+
+interface Area {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 
 export default function AddChildPage() {
     const router = useRouter();
@@ -32,7 +41,7 @@ export default function AddChildPage() {
     const [isCropping, setIsCropping] = useState(false);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,7 +59,7 @@ export default function AddChildPage() {
         }
     };
 
-    const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
@@ -144,7 +153,7 @@ export default function AddChildPage() {
                         </div>
 
                         <div className="relative h-[50vh] md:h-[60vh] w-full bg-black">
-                            {/* @ts-ignore */}
+                            {/* @ts-expect-error - Types for react-easy-crop might be missing or incorrect */}
                             <Cropper
                                 image={tempImageSrc}
                                 crop={crop}
@@ -200,7 +209,13 @@ export default function AddChildPage() {
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 {photoPreview ? (
-                                    <img src={photoPreview} alt="Preview" className="h-full w-full object-cover" />
+                                    <Image
+                                        src={photoPreview}
+                                        alt="Preview"
+                                        fill
+                                        className="rounded-full object-cover"
+                                        unoptimized
+                                    />
                                 ) : (
                                     <div className="flex flex-col items-center gap-2 text-orange-500 dark:text-orange-400">
                                         <div className="rounded-full bg-white/50 p-3 dark:bg-slate-700/50">

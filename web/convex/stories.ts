@@ -243,7 +243,7 @@ export const bulkDeleteStories = mutation({
         for (const storyId of args.storyIds) {
             try {
                 // Reuse the single delete logic
-                const result = await ctx.runMutation(api.stories.deleteStory, { storyId });
+                await ctx.runMutation(api.stories.deleteStory, { storyId });
                 results.push({ storyId, success: true });
             } catch (error) {
                 results.push({

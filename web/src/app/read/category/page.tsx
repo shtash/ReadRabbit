@@ -3,14 +3,15 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowLeft, Cat, Rocket, Ghost, Fish, Car, Music, Sparkles } from "lucide-react";
+import { ArrowLeft, Cat, Rocket, Ghost, Fish, Car, Music, Sparkles, LucideIcon } from "lucide-react";
 import { useAction, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Id } from "../../../../convex/_generated/dataModel";
 
 // Map themes to icons (fallback)
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
     animals: Cat,
     space: Rocket,
     magic: Sparkles,
@@ -33,7 +34,7 @@ export default function CategoryPage() {
         setIsGenerating(theme);
         try {
             const storyId = await createStory({
-                childId: childId as any,
+                childId: childId as Id<"children">,
                 theme: theme,
                 personalizationMode: "none",
                 sourceMode: "category",

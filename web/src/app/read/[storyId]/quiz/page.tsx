@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { ArrowLeft, Check, X, Award } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "convex/react";

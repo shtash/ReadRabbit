@@ -2,7 +2,7 @@
 
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { StoryCard } from "@/components/ui/story-card";
-import { Clock, Heart, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";

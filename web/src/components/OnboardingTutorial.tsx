@@ -108,8 +108,8 @@ export function OnboardingTutorial({ onComplete }: { onComplete: () => void }) {
                     {/* Final step extra message */}
                     {isLastStep && (
                         <div className="mb-6 rounded-2xl bg-primary/10 p-4 text-center">
-                            <p className="font-bold text-primary">
-                                Next: Add your child's profile in the Parent Dashboard!
+                            <p className="text-lg text-muted-foreground">
+                                Let&apos;s get you set up! First, are you a parent setting this up for your child?
                             </p>
                         </div>
                     )}

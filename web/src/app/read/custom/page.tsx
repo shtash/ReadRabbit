@@ -3,11 +3,24 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowLeft, Mic, Send, Sparkles, Wand2 } from "lucide-react";
+import { ArrowLeft, Mic, Sparkles, Wand2 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useAction, useQuery } from "convex/react";
+import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useState, useRef, useEffect } from "react";
+
+import { Id } from "../../../../convex/_generated/dataModel";
+
+// Minimal type definitions for Web Speech API
+interface SpeechRecognitionResult {
+    [index: number]: { transcript: string };
+}
+interface SpeechRecognitionEvent {
+    results: { [index: number]: SpeechRecognitionResult };
+}
+interface SpeechRecognitionErrorEvent {
+    error: string;
+}
 
 export default function CustomStoryPage() {
     const searchParams = useSearchParams();
@@ -18,6 +31,7 @@ export default function CustomStoryPage() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [permissionDenied, setPermissionDenied] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognitionRef = useRef<any>(null);
 
     useEffect(() => {
@@ -37,6 +51,7 @@ export default function CustomStoryPage() {
 
         setPermissionDenied(false);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SpeechRecognition) {
             alert("Your browser does not support speech recognition.");
@@ -54,17 +69,17 @@ export default function CustomStoryPage() {
             setPermissionDenied(false);
         };
 
-        recognition.onresult = (event: any) => {
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
             const transcript = event.results[0][0].transcript;
             setPrompt((prev) => (prev ? prev + " " + transcript : transcript));
         };
 
-        recognition.onerror = (event: any) => {
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
             console.error("Speech recognition error", event.error);
             if (event.error === "not-allowed") {
                 setPermissionDenied(true);
             } else {
-                alert(`Speech recognition error: ${event.error}`);
+                alert(`Speech recognition error: ${event.error} `);
             }
             setIsListening(false);
         };
@@ -86,7 +101,7 @@ export default function CustomStoryPage() {
         setIsGenerating(true);
         try {
             const storyId = await createStory({
-                childId: childId as any,
+                childId: childId as Id<"children">,
                 theme: "custom",
                 personalizationMode: "none",
                 sourceMode: "custom",
@@ -105,7 +120,7 @@ export default function CustomStoryPage() {
         <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             <header className="flex items-center gap-4 px-6 pt-12 pb-6">
                 <Link
-                    href={`/read?childId=${childId}`}
+                    href={`/ read ? childId = ${childId} `}
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
                 >
                     <ArrowLeft className="h-6 w-6" />
@@ -121,12 +136,12 @@ export default function CustomStoryPage() {
                 <div className="flex flex-col items-center justify-center gap-4 rounded-3xl bg-card p-12 text-center shadow-sm dark:bg-card/50">
                     <button
                         onClick={toggleListening}
-                        className={`group flex h-32 w-32 items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95 ${isListening ? "bg-red-100 animate-pulse" : "bg-primary/10 hover:bg-primary/20"
-                            }`}
+                        className={`group flex h - 32 w - 32 items - center justify - center rounded - full transition - all hover: scale - 110 active: scale - 95 ${isListening ? "bg-red-100 animate-pulse" : "bg-primary/10 hover:bg-primary/20"
+                            } `}
                     >
                         <Mic
-                            className={`h-16 w-16 transition-colors ${isListening ? "text-red-500" : "text-primary group-hover:text-primary/80"
-                                }`}
+                            className={`h - 16 w - 16 transition - colors ${isListening ? "text-red-500" : "text-primary group-hover:text-primary/80"
+                                } `}
                         />
                     </button>
                     <p className="text-lg font-medium text-muted-foreground">
