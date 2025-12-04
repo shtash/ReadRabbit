@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { BottomNav } from "@/components/ui/bottom-nav";
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -22,7 +23,7 @@ export default function StoryPage() {
     const storyPages = story?.pages || [
         {
             text: "Loading your story...",
-            illustrationUrl: "https://placehold.co/600x400/gray/white?text=Loading...",
+            illustrationUrl: "https://placehold.co/600x400/gray/white.png?text=Loading...",
         }
     ];
 
@@ -70,11 +71,10 @@ export default function StoryPage() {
 
                 <div className="mb-8 aspect-square w-full max-w-md overflow-hidden rounded-3xl bg-muted shadow-2xl relative">
                     {story.coverImageUrl ? (
-                        <Image
+                        <img
                             src={story.coverImageUrl}
                             alt="Reward"
-                            fill
-                            className="object-cover"
+                            className="h-full w-full object-cover"
                         />
                     ) : (
                         <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-muted/50">
@@ -86,74 +86,98 @@ export default function StoryPage() {
                     )}
                 </div>
 
-                <button
-                    onClick={handleFinish}
-                    className="flex h-12 w-auto max-w-md items-center justify-center gap-2 rounded-full bg-green-500 px-8 text-xl font-bold text-white shadow-xl transition-all hover:bg-green-600 active:scale-95"
-                >
-                    <span>Take Quiz</span>
-                    <Check className="h-6 w-6" />
-                </button>
-            </div>
+                <div className="flex w-full max-w-md flex-col gap-4">
+                    <button
+                        onClick={handleFinish}
+                        className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-green-500 px-8 text-xl font-bold text-white shadow-xl transition-all hover:bg-green-600 active:scale-95"
+                    >
+                        <span>Take Quiz</span>
+                        <Check className="h-6 w-6" />
+                    </button>
+
+                    <Link
+                        href={`/read?childId=${story.childId}`}
+                        className="flex h-12 w-full items-center justify-center rounded-full bg-muted px-6 text-lg font-bold text-muted-foreground transition-all hover:bg-muted/80 active:scale-95"
+                    >
+                        Skip Quiz
+                    </Link>
+                </div>
+
+                <BottomNav />
+            </div >
         );
     }
 
     const currentPageData = pages[currentPage];
 
+    const getTextSizeClass = (readingLevel: string, textLength: number) => {
+        const isYounger = readingLevel === 'starter' || readingLevel === 'emerging';
+
+        if (isYounger) {
+            if (textLength > 150) return "text-3xl md:text-4xl leading-relaxed";
+            return "text-4xl md:text-6xl leading-relaxed";
+        } else {
+            // Older readers
+            if (textLength > 300) return "text-xl md:text-2xl leading-relaxed";
+            return "text-2xl md:text-4xl leading-relaxed";
+        }
+    };
+
     return (
-        <div className="mx-auto min-h-screen w-full bg-background font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+        <div className="mx-auto flex min-h-screen w-full flex-col bg-muted/30 font-sans text-foreground dark:bg-background">
             {/* Header */}
-            <header className="flex items-center justify-between px-6 pt-2 pb-4">
+            <header className="mx-auto flex w-full max-w-2xl items-center justify-between px-4 py-4 lg:max-w-3xl">
                 <Link
                     href={`/read?childId=${story.childId}`}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-muted/80"
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:bg-white/80 hover:scale-105 active:scale-95 dark:bg-slate-800 dark:text-white"
                 >
-                    <ArrowLeft className="h-6 w-6" />
+                    <ArrowLeft className="h-6 w-6 text-slate-700 dark:text-slate-200" />
                 </Link>
-                <div className="text-sm font-bold text-muted-foreground">
-                    Page {currentPage + 1} of {pages.length}
-                </div>
-                <div className="w-10" /> {/* Spacer */}
             </header>
 
-            {/* Content - Text Only */}
-            <main className="flex flex-1 flex-col items-center justify-center px-6 py-2 pb-32">
-                <div className="w-full rounded-3xl bg-card p-6 shadow-sm dark:bg-card/50 md:p-12">
-                    <p className="text-2xl font-medium leading-relaxed text-foreground md:text-4xl md:leading-loose">
+            {/* Content - Centered Book Page */}
+            <main className="flex flex-1 flex-col items-center justify-center px-4 pb-32 md:pb-12">
+                <div className="relative flex aspect-[3/4] w-full max-w-2xl flex-col items-center justify-center overflow-hidden rounded-[1rem] bg-white p-8 shadow-2xl ring-1 ring-black/5 transition-all dark:bg-slate-800 dark:ring-white/10 md:aspect-[2/3] md:rounded-[2rem] md:p-16 lg:max-w-3xl">
+                    <div className="absolute top-6 rounded-full bg-slate-100 px-4 py-1 text-sm font-bold text-slate-500 dark:bg-slate-700 dark:text-slate-400">
+                        Page {currentPage + 1} of {pages.length}
+                    </div>
+                    <p className={`font-medium text-slate-800 text-justify transition-all duration-300 dark:text-slate-100 ${getTextSizeClass(story.readingLevel, currentPageData.text.length)}`}>
                         {currentPageData.text}
                     </p>
                 </div>
+
+                {/* Controls - Below page on desktop, fixed on mobile */}
+                <div className="fixed bottom-24 left-0 right-0 px-6 md:static md:mt-8 md:w-full md:max-w-2xl md:px-0 lg:max-w-3xl">
+                    <div className="mx-auto flex w-full items-center justify-between gap-4">
+                        <button
+                            onClick={handleBack}
+                            disabled={currentPage === 0}
+                            className={`flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg text-slate-700 transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none dark:bg-slate-800 dark:text-slate-200`}
+                        >
+                            <ArrowLeft className="h-6 w-6" />
+                        </button>
+
+                        <button
+                            onClick={handleNext}
+                            className="flex h-14 w-auto items-center justify-center gap-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-8 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 active:scale-95"
+                        >
+                            {isLastPage ? (
+                                <>
+                                    <span>Finish</span>
+                                    <Check className="h-6 w-6" />
+                                </>
+                            ) : (
+                                <>
+                                    <span>Next</span>
+                                    <ArrowRight className="h-6 w-6" />
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
             </main>
 
-            {/* Controls */}
-            <footer className="fixed bottom-0 left-0 right-0 p-6 md:relative md:p-0 md:px-6 md:pb-8">
-                <div className="mx-auto flex max-w-[85vw] items-center justify-between gap-4 md:max-w-full">
-                    <button
-                        onClick={handleBack}
-                        disabled={currentPage === 0}
-                        className={`flex h-16 w-16 items-center justify-center rounded-full bg-muted text-foreground transition-all active:scale-95 ${currentPage === 0 ? "opacity-0 pointer-events-none" : "opacity-100"
-                            }`}
-                    >
-                        <ArrowLeft className="h-8 w-8" />
-                    </button>
-
-                    <button
-                        onClick={handleNext}
-                        className="flex h-12 w-auto items-center justify-center gap-2 rounded-[2rem] bg-gradient-to-r from-orange-700/60 to-orange-600/60 px-8 text-xl font-bold text-white shadow-xl backdrop-blur-md border border-white/20 transition-all hover:from-orange-700 hover:to-orange-600 active:scale-95"
-                    >
-                        {isLastPage ? (
-                            <>
-                                <span>Finish</span>
-                                <Check className="h-6 w-6" />
-                            </>
-                        ) : (
-                            <>
-                                <span>Next</span>
-                                <ArrowRight className="h-6 w-6" />
-                            </>
-                        )}
-                    </button>
-                </div>
-            </footer>
+            <BottomNav />
         </div>
     );
 }

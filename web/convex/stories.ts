@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { action, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { AIProviderFactory } from "./ai/factory";
+import { Id } from "./_generated/dataModel";
 
 export const createStory = action({
     args: {
@@ -19,17 +20,61 @@ export const createStory = action({
             throw new Error("Child not found");
         }
 
-        // 2. Generate Story Text
+        // 2. Fetch Characters and Match
+        const characters = await ctx.runQuery(internal.storyInternal.getCharactersInternal, { childId: args.childId });
+        const matchedCharacterIds: Id<"characters">[] = [];
+        let characterContext = "";
+
+        if (args.customPromptText) {
+            const promptLower = args.customPromptText.toLowerCase();
+            const usedNames = new Set<string>();
+
+            // Shuffle characters to randomize selection if names are duplicated
+            const shuffledCharacters = [...characters].sort(() => Math.random() - 0.5);
+
+            for (const char of shuffledCharacters) {
+                const nameLower = char.name.toLowerCase();
+                if (promptLower.includes(nameLower) && !usedNames.has(nameLower)) {
+                    matchedCharacterIds.push(char._id);
+                    usedNames.add(nameLower);
+
+                    const age = char.birthYear ? new Date().getFullYear() - char.birthYear : null;
+                    let ageCategory = "unknown age";
+
+                    if (age !== null) {
+                        if (age <= 2) ageCategory = "baby";
+                        else if (age <= 4) ageCategory = "toddler";
+                        else if (age <= 9) ageCategory = "young kid";
+                        else if (age <= 12) ageCategory = "preteen";
+                        else if (age <= 19) ageCategory = "teenager";
+                        else if (age <= 39) ageCategory = "adult";
+                        else if (age <= 59) ageCategory = "middle-aged adult";
+                        else ageCategory = "senior";
+                    }
+
+                    characterContext += `${char.name} is a ${ageCategory} ${char.type}. `;
+                }
+            }
+        }
+
+        // 3. Generate Story Text
         const storyGenerator = AIProviderFactory.getInstance().getStoryGenerator();
+
+        let finalCustomPrompt = args.customPromptText;
+        if (characterContext) {
+            const basePrompt = args.customPromptText || "Write a story.";
+            finalCustomPrompt = `${basePrompt}\n\nNote: The following characters are in this story: ${characterContext}`;
+        }
+
         const generatedStory = await storyGenerator.generateStory({
             theme: args.theme,
             age: child.age,
             readingLevel: child.readingLevel,
             interests: child.interests,
-            customPrompt: args.customPromptText,
+            customPrompt: finalCustomPrompt,
         });
 
-        // 3. Save to DB (Text Only first)
+        // 4. Save to DB (Text Only first)
         const storyId = await ctx.runMutation(internal.storyInternal.internalCreateStory, {
             childId: args.childId,
             title: generatedStory.title,
@@ -39,6 +84,7 @@ export const createStory = action({
             sourceMode: args.sourceMode,
             customPromptText: args.customPromptText,
             coverImageUrl: undefined, // No image yet
+            characterIds: matchedCharacterIds.length > 0 ? matchedCharacterIds : undefined,
             pages: generatedStory.pages.map((p, i) => ({
                 ...p,
                 pageIndex: i,
@@ -47,13 +93,14 @@ export const createStory = action({
             quizQuestions: generatedStory.quizQuestions,
         });
 
-        // 4. Schedule Background Image Generation
+        // 5. Schedule Background Image Generation
         await ctx.scheduler.runAfter(0, api.stories.generateStoryImages, {
             storyId,
             theme: args.theme,
             title: generatedStory.title,
             coverImagePrompt: generatedStory.coverImagePrompt,
             pages: generatedStory.pages.map(p => ({ illustrationPrompt: p.illustrationPrompt })),
+            characterContext: characterContext || undefined,
         });
 
         return storyId;
@@ -67,17 +114,28 @@ export const generateStoryImages = action({
         title: v.string(),
         coverImagePrompt: v.optional(v.string()), // New argument
         pages: v.array(v.object({ illustrationPrompt: v.optional(v.string()) })),
+        characterContext: v.optional(v.string()),
     },
     handler: async (ctx, args): Promise<void> => {
         console.log(`[generateStoryImages] Starting for storyId: ${args.storyId}`);
         const imageGenerator = AIProviderFactory.getInstance().getImageGenerator();
 
+        // Helper to append character context
+        const appendContext = (prompt: string) => {
+            if (args.characterContext) {
+                return `${prompt} Characters: ${args.characterContext}`;
+            }
+            return prompt;
+        };
+
         // Generate Cover Image
         try {
             // Use the AI-generated prompt if available, otherwise fallback to the template
-            const prompt = args.coverImagePrompt
+            let prompt = args.coverImagePrompt
                 ? `${args.coverImagePrompt} Style: colorful, friendly, storybook illustration.`
                 : `Cover image for a children's story titled "${args.title}". Theme: ${args.theme}. Style: colorful, friendly, storybook illustration.`;
+
+            prompt = appendContext(prompt);
 
             console.log(`[generateStoryImages] Generating image with prompt: ${prompt}`);
 
@@ -136,6 +194,8 @@ export const generateStoryImages = action({
 
         } catch (e) {
             console.error("[generateStoryImages] Failed to generate/upload cover image", e);
+            // @ts-ignore
+            if (e.message) console.error("Error message:", e.message);
         }
     },
 });

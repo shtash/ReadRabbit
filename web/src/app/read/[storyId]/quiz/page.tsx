@@ -6,6 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "../../../../../convex/_generated/api";
 import { Id } from "../../../../../convex/_generated/dataModel";
+import { BottomNav } from "@/components/ui/bottom-nav";
 
 export default function QuizPage() {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -17,8 +18,22 @@ export default function QuizPage() {
 
     const quiz = useQuery(api.quizzes.getQuizForStory, { storyId });
 
-    if (!quiz) {
+    if (quiz === undefined) {
         return <div className="flex min-h-screen items-center justify-center">Loading quiz...</div>;
+    }
+
+    if (quiz === null) {
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+                <p className="text-xl font-bold text-slate-600">No quiz available for this story.</p>
+                <button
+                    onClick={() => router.back()}
+                    className="rounded-full bg-orange-500 px-6 py-3 font-bold text-white hover:bg-orange-600"
+                >
+                    Go Back
+                </button>
+            </div>
+        );
     }
 
     const questions = quiz.questions.map(q => ({
@@ -112,7 +127,7 @@ export default function QuizPage() {
     }
 
     return (
-        <div className="mx-auto min-h-screen w-full bg-gradient-to-b from-background to-muted/30 font-sans text-foreground md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+        <div className="mx-auto min-h-screen w-full bg-gradient-to-b from-background to-muted/30 pb-24 font-sans text-foreground md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             {/* Header */}
             <header className="flex items-center justify-between gap-4 px-6 pt-12 pb-6">
                 <button
@@ -170,7 +185,14 @@ export default function QuizPage() {
             </main>
 
             <footer className="fixed bottom-0 left-0 right-0 p-6 md:relative md:p-0 md:px-6 md:pb-8 md:mt-8">
-                <div className="mx-auto flex max-w-[85vw] justify-center md:max-w-full">
+                <div className="mx-auto flex max-w-[85vw] items-center justify-center gap-4 md:max-w-full">
+                    <button
+                        onClick={handleFinish}
+                        className="flex h-12 w-auto items-center justify-center rounded-full bg-muted px-6 text-lg font-bold text-muted-foreground transition-all hover:bg-muted/80 active:scale-95"
+                    >
+                        Skip
+                    </button>
+
                     <button
                         onClick={handleNext}
                         disabled={selectedAnswers[currentQuestionIndex] === undefined}
@@ -183,6 +205,8 @@ export default function QuizPage() {
                     </button>
                 </div>
             </footer>
+
+            <BottomNav />
         </div>
     );
 }

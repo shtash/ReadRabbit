@@ -165,7 +165,7 @@ export class GoogleImageGenerator implements ImageGenerator {
             // Fallback for billing error or other failures
             if (error instanceof Error && error.message.includes("billed users")) {
                 console.warn("[GoogleImageGenerator] Billing required for Imagen. Returning placeholder.");
-                return "https://placehold.co/1024x1024/purple/white?text=Reward+Image+(Billing+Required)";
+                return "https://placehold.co/1024x1024/purple/white.png?text=Reward+Image+(Billing+Required)";
             }
 
             throw error;

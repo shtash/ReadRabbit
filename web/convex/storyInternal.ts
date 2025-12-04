@@ -9,6 +9,16 @@ export const getChildProfileInternal = internalQuery({
     },
 });
 
+export const getCharactersInternal = internalQuery({
+    args: { childId: v.id("children") },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("characters")
+            .withIndex("by_child", (q) => q.eq("childId", args.childId))
+            .collect();
+    },
+});
+
 export const internalCreateStory = internalMutation({
     args: {
         childId: v.id("children"),
@@ -19,6 +29,7 @@ export const internalCreateStory = internalMutation({
         sourceMode: v.string(),
         customPromptText: v.optional(v.string()),
         coverImageUrl: v.optional(v.string()),
+        characterIds: v.optional(v.array(v.id("characters"))),
         pages: v.array(
             v.object({
                 pageIndex: v.number(),
@@ -45,6 +56,7 @@ export const internalCreateStory = internalMutation({
             sourceMode: args.sourceMode,
             customPromptText: args.customPromptText,
             coverImageUrl: args.coverImageUrl,
+            characterIds: args.characterIds,
             createdAt: Date.now(),
         });
 

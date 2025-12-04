@@ -65,6 +65,7 @@ export default defineSchema({
         personalizationMode: v.string(), // 'none' | 'include-child'
         customPromptText: v.optional(v.string()), // for custom mode
         sourceMode: v.string(), // 'auto' | 'category' | 'custom'
+        characterIds: v.optional(v.array(v.id("characters"))),
     }).index("by_child", ["childId"]),
 
     // Story Pages
