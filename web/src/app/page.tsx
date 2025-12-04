@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { StoryCard } from "@/components/ui/story-card";
 import Link from "next/link";
 import { useCardWidth } from "@/hooks/useCardWidth";
-import { useDragScroll } from "@/hooks/useDragScroll";
+import { HorizontalScroller } from "@/components/ui/HorizontalScroller";
 import { appConfig } from "@readrabbit/config";
 import { useUser, SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
@@ -18,8 +18,6 @@ import { ProfileSwitcher } from "@/components/ProfileSwitcher";
 
 export default function Home() {
   const cardWidth = useCardWidth();
-  const storiesRef = useDragScroll<HTMLDivElement>();
-  const communityRef = useDragScroll<HTMLDivElement>();
   const { user: clerkUser, isLoaded } = useUser();
   const convexUser = useQuery(api.users.getCurrentUser);
   const getOrCreateUser = useMutation(api.users.getOrCreateUser);
@@ -243,19 +241,17 @@ export default function Home() {
             </Link>
           </div>
 
-          <div ref={storiesRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
-            <div className="flex gap-3 md:gap-4 pb-2">
-              {stories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
-                <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
-                  <StoryCard
-                    title={story.title}
-                    category={story.category}
-                    color={story.color}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <HorizontalScroller className="-mx-6">
+            {stories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
+              <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
+                <StoryCard
+                  title={story.title}
+                  category={story.category}
+                  color={story.color}
+                />
+              </div>
+            ))}
+          </HorizontalScroller>
         </section>
 
         {/* Community Content */}
@@ -269,19 +265,17 @@ export default function Home() {
             </Link>
           </div>
 
-          <div ref={communityRef} className="-mx-6 overflow-x-auto px-6 scrollbar-hide drag-scroll">
-            <div className="flex gap-3 md:gap-4 pb-2">
-              {communityStories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
-                <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
-                  <StoryCard
-                    title={story.title}
-                    category={story.category}
-                    color={story.color}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <HorizontalScroller className="-mx-6">
+            {communityStories.slice(0, appConfig.storyCards.maxVisibleInSection).map((story, index) => (
+              <div key={index} style={{ width: `${cardWidth}px` }} className="flex-shrink-0">
+                <StoryCard
+                  title={story.title}
+                  category={story.category}
+                  color={story.color}
+                />
+              </div>
+            ))}
+          </HorizontalScroller>
         </section>
       </main>
 

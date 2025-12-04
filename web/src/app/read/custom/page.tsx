@@ -118,7 +118,7 @@ export default function CustomStoryPage() {
     if (!childId) return <div>Missing childId</div>;
 
     return (
-        <div className="mx-auto min-h-screen w-full bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+        <div className="mx-auto flex min-h-screen w-full flex-col bg-background pb-24 font-sans text-foreground shadow-2xl selection:bg-primary/20 md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             <header className="flex items-center gap-4 px-6 pt-12 pb-6">
                 <Link
                     href={`/read?childId=${childId}`}
@@ -133,7 +133,7 @@ export default function CustomStoryPage() {
                 </div>
             </header>
 
-            <main className="flex flex-col gap-6 px-6">
+            <main className="mx-auto flex w-full flex-1 flex-col justify-center gap-6 px-6 md:w-[60%]">
                 <div className="flex flex-col items-center justify-center gap-4 rounded-3xl bg-card p-12 text-center shadow-sm dark:bg-card/50">
                     <button
                         onClick={toggleListening}

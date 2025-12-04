@@ -75,6 +75,16 @@ export const appConfig = {
         imageModelFast: 'imagen-4.0-generate-preview-06-06',
         useFastImageModel: true, // Toggle this to switch
     },
+
+    /**
+     * Scroller Momentum Settings
+     */
+    scrollerMomentum: {
+        enabled: true,           // Toggle momentum on/off
+        friction: 0.92,          // How quickly momentum slows (0.90-0.98, higher = more slide)
+        minVelocity: 0.1,        // Velocity threshold to stop animation (pixels/ms)
+        velocitySmoothing: 0.5,  // Smoothing factor for velocity (0-1, higher = more responsive)
+    },
 } as const;
 
 export type AppConfig = typeof appConfig;

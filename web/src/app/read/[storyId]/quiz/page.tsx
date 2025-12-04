@@ -127,7 +127,7 @@ export default function QuizPage() {
     }
 
     return (
-        <div className="mx-auto min-h-screen w-full bg-gradient-to-b from-background to-muted/30 pb-24 font-sans text-foreground md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
+        <div className="mx-auto min-h-screen w-full bg-gradient-to-b from-background to-muted/30 font-sans text-foreground md:max-w-[85vw] lg:max-w-[75vw] xl:max-w-[60vw]">
             {/* Header */}
             <header className="flex items-center justify-between gap-4 px-6 pt-12 pb-6">
                 <button
@@ -205,8 +205,6 @@ export default function QuizPage() {
                     </button>
                 </div>
             </footer>
-
-            <BottomNav />
         </div>
     );
 }

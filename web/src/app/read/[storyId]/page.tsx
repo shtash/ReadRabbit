@@ -103,7 +103,6 @@ export default function StoryPage() {
                     </Link>
                 </div>
 
-                <BottomNav />
             </div >
         );
     }
@@ -147,19 +146,20 @@ export default function StoryPage() {
                 </div>
 
                 {/* Controls - Below page on desktop, fixed on mobile */}
-                <div className="fixed bottom-24 left-0 right-0 px-6 md:static md:mt-8 md:w-full md:max-w-2xl md:px-0 lg:max-w-3xl">
+                <div className="fixed bottom-8 left-0 right-0 px-6 md:static md:mt-8 md:w-full md:max-w-2xl md:px-0 lg:max-w-3xl">
                     <div className="mx-auto flex w-full items-center justify-between gap-4">
                         <button
                             onClick={handleBack}
                             disabled={currentPage === 0}
-                            className={`flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg text-slate-700 transition-all hover:scale-110 active:scale-95 disabled:opacity-0 disabled:pointer-events-none dark:bg-slate-800 dark:text-slate-200`}
+                            className={`flex h-14 w-auto items-center justify-center gap-2 rounded-full bg-white px-8 text-xl font-bold text-slate-800 shadow-xl transition-all hover:scale-105 hover:bg-slate-50 active:scale-95 disabled:opacity-0 disabled:pointer-events-none dark:bg-slate-700 dark:text-white`}
                         >
                             <ArrowLeft className="h-6 w-6" />
+                            <span>Prev</span>
                         </button>
 
                         <button
                             onClick={handleNext}
-                            className="flex h-14 w-auto items-center justify-center gap-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-8 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 active:scale-95"
+                            className="flex h-14 w-auto items-center justify-center gap-3 rounded-full bg-slate-800 px-8 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-slate-900 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
                         >
                             {isLastPage ? (
                                 <>
@@ -176,8 +176,6 @@ export default function StoryPage() {
                     </div>
                 </div>
             </main>
-
-            <BottomNav />
         </div>
     );
 }

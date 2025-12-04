@@ -19,7 +19,9 @@ interface Area {
     height: number;
 }
 
-export default function AddCharacterPage() {
+import { Suspense } from "react";
+
+function AddCharacterContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const childId = searchParams.get("childId");
@@ -342,5 +344,13 @@ export default function AddCharacterPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function AddCharacterPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+            <AddCharacterContent />
+        </Suspense>
     );
 }
