@@ -157,7 +157,7 @@ export function HorizontalScroller({
                     }
                 }}
             >
-                <div className={`flex gap-3 md:gap-4 pb-2 px-6 ${contentClassName}`}>
+                <div className={`flex flex-nowrap gap-3 md:gap-4 pb-2 px-6 ${contentClassName}`}>
                     {children}
                 </div>
             </div>
