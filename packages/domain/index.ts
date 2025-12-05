@@ -5,6 +5,8 @@ export interface StoryGenerationParams {
     interests: string[];
     characters?: { name: string; type: string }[];
     customPrompt?: string;
+    wordCount?: number;
+    pageCount?: number;
 }
 
 export interface GeneratedStory {

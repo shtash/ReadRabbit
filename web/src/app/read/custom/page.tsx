@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useState, useRef, useEffect } from "react";
+import { appConfig } from "@readrabbit/config";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 
@@ -32,6 +33,7 @@ export default function CustomStoryPage() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [permissionDenied, setPermissionDenied] = useState(false);
+    const [storyLength, setStoryLength] = useState<string>("medium");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognitionRef = useRef<any>(null);
 
@@ -107,6 +109,7 @@ export default function CustomStoryPage() {
                 personalizationMode: "none",
                 sourceMode: "custom",
                 customPromptText: prompt,
+                storyLength,
             });
             router.push(`/read/${storyId}`);
         } catch (error) {
@@ -162,7 +165,33 @@ export default function CustomStoryPage() {
                         placeholder="Or type your story idea here..."
                         className="min-h-[200px] w-full resize-none rounded-3xl border-2 border-orange-200 bg-orange-50/50 p-6 text-lg font-medium placeholder:text-muted-foreground focus:border-orange-400 focus:ring-4 focus:ring-orange-100 focus:outline-none dark:bg-card/50 dark:border-orange-900/30"
                     />
-                    <div className="mt-6 flex justify-center">
+
+                    {/* Story Length Selector */}
+                    <div className="mt-6 mb-6">
+                        <label className="mb-3 block text-center text-lg font-semibold text-muted-foreground">
+                            Story Length
+                        </label>
+                        <div className="flex justify-center gap-4">
+                            {(Object.entries(appConfig.storyLength.options) as [string, { label: string; pages: number }][]).map(([key, option]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => setStoryLength(key)}
+                                    className={`flex w-32 flex-col items-center justify-center rounded-2xl border-2 py-4 transition-all ${storyLength === key
+                                            ? "border-orange-500 bg-orange-50 text-orange-600 shadow-lg shadow-orange-500/20 dark:bg-orange-900/20 dark:text-orange-400"
+                                            : "border-gray-200 bg-white text-gray-500 hover:border-orange-200 hover:bg-orange-50/50 dark:bg-card dark:border-gray-700 dark:text-gray-400 dark:hover:border-orange-900/50"
+                                        }`}
+                                >
+                                    <span className="text-lg font-bold">{option.label}</span>
+                                    <span className={`text-xs font-medium ${storyLength === key ? "text-orange-600/80 dark:text-orange-400/80" : "text-gray-400"
+                                        }`}>
+                                        {option.pages} Pages
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-2 flex justify-center">
                         <button
                             onClick={handleGenerate}
                             disabled={isGenerating || !prompt.trim()}

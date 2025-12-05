@@ -6,11 +6,13 @@ import { appConfig } from "@readrabbit/config";
 interface HorizontalScrollerProps {
     children: ReactNode;
     className?: string;
+    contentClassName?: string;
 }
 
 export function HorizontalScroller({
     children,
     className = "",
+    contentClassName = "",
 }: HorizontalScrollerProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -141,7 +143,7 @@ export function HorizontalScroller({
     }, []);
 
     return (
-        <div className={`relative md:max-w-screen-2xl md:mx-auto ${className}`}>
+        <div className={`relative ${className}`}>
             <div
                 ref={scrollRef}
                 className="overflow-x-auto scrollbar-hide cursor-grab select-none"
@@ -155,7 +157,7 @@ export function HorizontalScroller({
                     }
                 }}
             >
-                <div className="flex gap-3 md:gap-4 pb-2 px-6">
+                <div className={`flex gap-3 md:gap-4 pb-2 px-6 ${contentClassName}`}>
                     {children}
                 </div>
             </div>

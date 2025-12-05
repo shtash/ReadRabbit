@@ -35,6 +35,8 @@ export class GoogleStoryGenerator implements StoryGenerator {
             - Interests: ${params.interests.join(", ")}
             ${params.characters ? `- Characters: ${params.characters.map(c => `${c.name} (${c.type})`).join(", ")}` : ""}
             ${params.customPrompt ? `- Custom Request: ${params.customPrompt}` : ""}
+            ${params.wordCount ? `- Target Word Count: Approximately ${params.wordCount} words total` : ""}
+            ${params.pageCount ? `- Target Page Count: Exactly ${params.pageCount} pages` : ""}
 
             Output the story as a RAW JSON object with this exact structure. Do not include any markdown formatting or code blocks:
             {
@@ -54,8 +56,9 @@ export class GoogleStoryGenerator implements StoryGenerator {
                     }
                 ]
             }
-            Create 3-5 pages. Ensure the content is safe, age-appropriate, and engaging.
-            Generate 3 simple multiple-choice comprehension questions based on the story.
+            Create exactly ${params.pageCount || "3-5"} pages. Ensure the content is safe, age-appropriate, and engaging.
+            Generate 3 multiple-choice comprehension questions based on the story.
+            The questions should be slightly challenging and require paying attention to details in the story, rather than just obvious surface-level facts. Avoid questions where the answer is immediately obvious without reading.
             For the illustration description, pick out an important scene from the story and describe an image to go along with it. Make sure any characters' age and gender and/or any animal types match the story. It should be depict a scene from the story, not the characters posing.  Do not put any text in the image.
         `;
 

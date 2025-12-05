@@ -85,6 +85,25 @@ export const appConfig = {
         minVelocity: 0.1,        // Velocity threshold to stop animation (pixels/ms)
         velocitySmoothing: 0.5,  // Smoothing factor for velocity (0-1, higher = more responsive)
     },
+
+    /**
+     * Story Length Settings
+     */
+    storyLength: {
+        options: {
+            short: { label: "Short", pages: 3 },
+            medium: { label: "Medium", pages: 6 },
+            long: { label: "Long", pages: 12 },
+        },
+        // Target words per page based on age
+        wordsPerPage: {
+            toddler: 15,    // Ages 0-4
+            youngKid: 40,   // Ages 5-8
+            preteen: 80,    // Ages 9-12
+            teenager: 150,  // Ages 13+
+            adult: 200,     // Ages 18+
+        }
+    },
 } as const;
 
 export type AppConfig = typeof appConfig;

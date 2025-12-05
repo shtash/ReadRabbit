@@ -8,7 +8,11 @@ import {
 
 export class MockStoryGenerator implements StoryGenerator {
     async generateStory(params: StoryGenerationParams): Promise<GeneratedStory> {
-        console.log("[Mock] Generating story with params:", params);
+        console.log("[Mock] Generating story with params:", {
+            ...params,
+            wordCount: params.wordCount,
+            pageCount: params.pageCount
+        });
         await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
 
         return {

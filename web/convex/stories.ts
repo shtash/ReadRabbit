@@ -3,6 +3,7 @@ import { action, mutation, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { AIProviderFactory } from "./ai/factory";
 import { Id } from "./_generated/dataModel";
+import { appConfig } from "@readrabbit/config";
 
 export const createStory = action({
     args: {
@@ -11,6 +12,9 @@ export const createStory = action({
         personalizationMode: v.string(),
         sourceMode: v.string(),
         customPromptText: v.optional(v.string()),
+        storyLength: v.optional(v.string()), // 'short', 'medium', 'long'
+        characterIds: v.optional(v.array(v.id("characters"))),
+        siblingIds: v.optional(v.array(v.id("children"))),
     },
     handler: async (ctx, args): Promise<string> => {
         // 1. Fetch child profile
@@ -25,7 +29,64 @@ export const createStory = action({
         const matchedCharacterIds: Id<"characters">[] = [];
         let characterContext = "";
 
-        if (args.customPromptText) {
+        // Add Child to Context if Personalization is Enabled
+        if (args.personalizationMode === "include-child") {
+            const age = child.age;
+            let ageCategory = "child";
+            if (age <= 2) ageCategory = "baby";
+            else if (age <= 4) ageCategory = "toddler";
+            else if (age <= 9) ageCategory = "young kid";
+            else if (age <= 12) ageCategory = "preteen";
+            else if (age <= 19) ageCategory = "teenager";
+
+            characterContext += `${child.name} is a ${ageCategory} (the main character). `;
+        }
+
+        // Add Siblings to Context
+        if (args.siblingIds && args.siblingIds.length > 0) {
+            for (const siblingId of args.siblingIds) {
+                const sibling = await ctx.runQuery(internal.storyInternal.getChildProfileInternal, { childId: siblingId });
+                if (sibling) {
+                    const age = sibling.age;
+                    let ageCategory = "child";
+                    if (age <= 2) ageCategory = "baby";
+                    else if (age <= 4) ageCategory = "toddler";
+                    else if (age <= 9) ageCategory = "young kid";
+                    else if (age <= 12) ageCategory = "preteen";
+                    else if (age <= 19) ageCategory = "teenager";
+
+                    characterContext += `${sibling.name} is a ${ageCategory} (a sibling/friend). `;
+                }
+            }
+        }
+
+        // Strategy 1: Explicit Selection (Categories Mode)
+        if (args.characterIds && args.characterIds.length > 0) {
+            for (const charId of args.characterIds) {
+                const char = characters.find(c => c._id === charId);
+                if (char) {
+                    matchedCharacterIds.push(char._id);
+
+                    const age = char.birthYear ? new Date().getFullYear() - char.birthYear : null;
+                    let ageCategory = "unknown age";
+
+                    if (age !== null) {
+                        if (age <= 2) ageCategory = "baby";
+                        else if (age <= 4) ageCategory = "toddler";
+                        else if (age <= 9) ageCategory = "young kid";
+                        else if (age <= 12) ageCategory = "preteen";
+                        else if (age <= 19) ageCategory = "teenager";
+                        else if (age <= 39) ageCategory = "adult";
+                        else if (age <= 59) ageCategory = "middle-aged adult";
+                        else ageCategory = "senior";
+                    }
+
+                    characterContext += `${char.name} is a ${ageCategory} ${char.type}. `;
+                }
+            }
+        }
+        // Strategy 2: Text Matching (Custom Mode)
+        else if (args.customPromptText) {
             const promptLower = args.customPromptText.toLowerCase();
             const usedNames = new Set<string>();
 
@@ -57,6 +118,20 @@ export const createStory = action({
             }
         }
 
+        // Calculate Word Count and Page Count
+        const lengthKey = (args.storyLength || 'medium') as keyof typeof appConfig.storyLength.options;
+        const lengthConfig = appConfig.storyLength.options[lengthKey] || appConfig.storyLength.options.medium;
+        const pageCount = lengthConfig.pages;
+
+        let wordsPerPage: number = appConfig.storyLength.wordsPerPage.youngKid; // Default
+        const age = child.age;
+        if (age <= 4) wordsPerPage = appConfig.storyLength.wordsPerPage.toddler;
+        else if (age <= 8) wordsPerPage = appConfig.storyLength.wordsPerPage.youngKid;
+        else if (age <= 12) wordsPerPage = appConfig.storyLength.wordsPerPage.preteen;
+        else if (age >= 13) wordsPerPage = appConfig.storyLength.wordsPerPage.teenager;
+
+        const totalWordCount = wordsPerPage * pageCount;
+
         // 3. Generate Story Text
         const storyGenerator = AIProviderFactory.getInstance().getStoryGenerator();
 
@@ -72,6 +147,8 @@ export const createStory = action({
             readingLevel: child.readingLevel,
             interests: child.interests,
             customPrompt: finalCustomPrompt,
+            wordCount: totalWordCount,
+            pageCount: pageCount,
         });
 
         // 4. Save to DB (Text Only first)
