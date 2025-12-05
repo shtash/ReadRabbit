@@ -113,12 +113,12 @@ export default function StoryPage() {
         const isYounger = readingLevel === 'starter' || readingLevel === 'emerging';
 
         if (isYounger) {
-            if (textLength > 150) return "text-3xl md:text-4xl leading-relaxed";
-            return "text-4xl md:text-6xl leading-relaxed";
+            if (textLength > 150) return "text-xl md:text-4xl leading-relaxed";
+            return "text-2xl md:text-6xl leading-relaxed";
         } else {
             // Older readers
-            if (textLength > 300) return "text-xl md:text-2xl leading-relaxed";
-            return "text-2xl md:text-4xl leading-relaxed";
+            if (textLength > 300) return "text-lg md:text-2xl leading-relaxed";
+            return "text-xl md:text-4xl leading-relaxed";
         }
     };
 
@@ -128,16 +128,16 @@ export default function StoryPage() {
             <header className="mx-auto flex w-full max-w-2xl items-center justify-between px-4 py-4 lg:max-w-3xl">
                 <Link
                     href={`/read?childId=${story.childId}`}
-                    className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:bg-white/80 hover:scale-105 active:scale-95 dark:bg-slate-800 dark:text-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:bg-white/80 hover:scale-105 active:scale-95 dark:bg-slate-800 dark:text-white md:h-12 md:w-12"
                 >
-                    <ArrowLeft className="h-6 w-6 text-slate-700 dark:text-slate-200" />
+                    <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-200 md:h-6 md:w-6" />
                 </Link>
             </header>
 
             {/* Content - Centered Book Page */}
             <main className="flex flex-1 flex-col items-center justify-center px-4 pb-32 md:pb-12">
-                <div className="relative flex aspect-[3/4] w-full max-w-2xl flex-col items-center justify-center overflow-hidden rounded-[1rem] bg-white p-8 shadow-2xl ring-1 ring-black/5 transition-all dark:bg-slate-800 dark:ring-white/10 md:aspect-[2/3] md:rounded-[2rem] md:p-16 lg:max-w-3xl">
-                    <div className="absolute top-6 rounded-full bg-slate-100 px-4 py-1 text-sm font-bold text-slate-500 dark:bg-slate-700 dark:text-slate-400">
+                <div className="relative flex w-full max-w-2xl flex-col items-center justify-center p-4 transition-all md:aspect-[2/3] md:overflow-hidden md:rounded-[2rem] md:bg-white md:p-16 md:shadow-2xl md:ring-1 md:ring-black/5 md:dark:bg-slate-800 md:dark:ring-white/10 lg:max-w-3xl">
+                    <div className="mb-4 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500 dark:bg-slate-700 dark:text-slate-400 md:absolute md:top-6 md:mb-0 md:px-4 md:text-sm">
                         Page {currentPage + 1} of {pages.length}
                     </div>
                     <p className={`font-medium text-slate-800 text-justify transition-all duration-300 dark:text-slate-100 ${getTextSizeClass(story.readingLevel, currentPageData.text.length)}`}>
@@ -146,30 +146,30 @@ export default function StoryPage() {
                 </div>
 
                 {/* Controls - Below page on desktop, fixed on mobile */}
-                <div className="fixed bottom-8 left-0 right-0 px-6 md:static md:mt-8 md:w-full md:max-w-2xl md:px-0 lg:max-w-3xl">
+                <div className="fixed bottom-6 left-0 right-0 px-6 md:static md:mt-8 md:w-full md:max-w-2xl md:px-0 lg:max-w-3xl">
                     <div className="mx-auto flex w-full items-center justify-between gap-4">
                         <button
                             onClick={handleBack}
                             disabled={currentPage === 0}
-                            className={`flex h-14 w-auto items-center justify-center gap-2 rounded-full bg-white px-8 text-xl font-bold text-slate-800 shadow-xl transition-all hover:scale-105 hover:bg-slate-50 active:scale-95 disabled:opacity-0 disabled:pointer-events-none dark:bg-slate-700 dark:text-white`}
+                            className={`flex h-12 w-auto items-center justify-center gap-2 rounded-full bg-white px-6 text-base font-bold text-slate-800 shadow-xl transition-all hover:scale-105 hover:bg-slate-50 active:scale-95 disabled:opacity-0 disabled:pointer-events-none dark:bg-slate-700 dark:text-white md:h-14 md:px-8 md:text-xl`}
                         >
-                            <ArrowLeft className="h-6 w-6" />
+                            <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
                             <span>Prev</span>
                         </button>
 
                         <button
                             onClick={handleNext}
-                            className="flex h-14 w-auto items-center justify-center gap-3 rounded-full bg-slate-800 px-8 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-slate-900 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                            className="flex h-12 w-auto items-center justify-center gap-2 rounded-full bg-slate-800 px-6 text-base font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-slate-900 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 md:h-14 md:gap-3 md:px-8 md:text-xl"
                         >
                             {isLastPage ? (
                                 <>
                                     <span>Finish</span>
-                                    <Check className="h-6 w-6" />
+                                    <Check className="h-5 w-5 md:h-6 md:w-6" />
                                 </>
                             ) : (
                                 <>
                                     <span>Next</span>
-                                    <ArrowRight className="h-6 w-6" />
+                                    <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
                                 </>
                             )}
                         </button>
