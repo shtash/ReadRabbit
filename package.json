@@ -11,5 +11,9 @@
         "build": "npm run build --workspaces",
         "lint": "npm run lint --workspaces",
         "convex": "npm run convex --workspace=web"
+    },
+    "overrides": {
+        "react": "19.2.3",
+        "react-dom": "19.2.3"
     }
 }
