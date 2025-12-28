@@ -1,16 +1,11 @@
 {
     "name": "readrabbit-monorepo",
     "private": true,
-    "workspaces": [
-        "web",
-        "mobile",
-        "packages/*"
-    ],
     "scripts": {
-        "dev": "npm run dev --workspace=web",
-        "build": "npm run build --workspaces",
-        "lint": "npm run lint --workspaces",
-        "convex": "npm run convex --workspace=web"
+        "dev": "pnpm --filter web dev",
+        "build": "pnpm -r build",
+        "lint": "pnpm -r lint",
+        "convex": "pnpm --filter web convex"
     },
     "overrides": {
         "react": "19.2.3",

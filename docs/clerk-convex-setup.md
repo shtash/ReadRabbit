@@ -103,7 +103,7 @@ Should show:
 
 ### Browser Check
 
-1. Start dev server: `npm run dev`
+1. Start dev server: `pnpm run dev`
 2. Open `http://localhost:3000`
 3. Click **"Sign Up"**
 4. Create test account with Google or email

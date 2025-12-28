@@ -1,12 +1,83 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Project Setup from Scratch
+
+Follow these steps to set up the ReadRabbit project on your local machine.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/shtash/ReadRabbit.git
+cd ReadRabbit
+```
+
+### 2. Install Dependencies
+
+This is a monorepo project using pnpm workspaces. Install all dependencies from the project root:
+
+```bash
+pnpm install
+```
+
+This will install dependencies for:
+- The main web application (`web/`)
+- All shared packages (`packages/*`)
+
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file in the project root with the following variables:
+
+```bash
+# Convex (Backend)
+CONVEX_DEPLOYMENT=your-convex-deployment-url
+NEXT_PUBLIC_CONVEX_URL=your-public-convex-url
+
+# Clerk (Authentication)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your-clerk-publishable-key
+CLERK_SECRET_KEY=your-clerk-secret-key
+
+# Optional: AI Services
+OPENAI_API_KEY=your-openai-api-key
+NANO_BANANA_API_KEY=your-nano-banana-api-key
+```
+
+**Where to get these values:**
+
+- **Convex**: Sign up at [convex.dev](https://convex.dev), create a new project, and find your deployment URLs in Settings → URL & Deploy Key
+- **Clerk**: Sign up at [clerk.com](https://clerk.com), create a new application, and find your API keys in the dashboard
+- **OpenAI**: Get an API key from [platform.openai.com](https://platform.openai.com)
+- **Nano Banana**: Get an API key from your Nano Banana account (if using this service)
+
+### 4. Initialize Convex
+
+Set up your Convex backend:
+
+```bash
+# Login to Convex (first time only)
+npx convex login
+
+# Initialize and deploy your Convex functions
+pnpm run convex dev
+```
+
+This will:
+- Create your Convex project (if it doesn't exist)
+- Deploy your database schema and functions
+- Start watching for changes
+
+Keep this terminal running during development if you're working on backend code.
+
+### 5. Verify Setup
+
+You're ready to start developing! Proceed to the "Getting Started" section below to run the development server.
+
 ## Getting Started
 
 First, run the development server:
 
 ```bash
 # From the project root
-npm run dev
+pnpm run dev
 ```
 
 This runs the frontend at [http://localhost:3000](http://localhost:3000).
@@ -17,7 +88,7 @@ If you are modifying backend code (`web/convex/` folder) or the schema, you need
 
 ```bash
 # From the project root
-npm run convex dev
+pnpm run convex dev
 ```
 
 This syncs your functions and regenerates types. You do **not** need this running if you are only working on the frontend.
@@ -91,8 +162,8 @@ npx convex run api.children.getChildren
 ### Development Tips
 
 - Functions in `convex/*.ts` are automatically deployed when Convex dev is running
-- Use `console.log()` in Convex functions to see logs in the terminal running `npm run convex dev`
-- Schema changes require restarting `npm run convex dev`
+- Use `console.log()` in Convex functions to see logs in the terminal running `pnpm run convex dev`
+- Schema changes require restarting `pnpm run convex dev`
 - Scripts in `scripts/` folder can be run with `npx convex run scripts/<filename>`
 
 

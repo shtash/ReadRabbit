@@ -71,8 +71,8 @@ You can install the **Convex integration** on Vercel to automatically deploy Con
 ## Troubleshooting
 
 ### Monorepo / Workspace Issues
-Since this is a monorepo, if the build fails complaining about missing modules (e.g., `@readrabbit/ui`), ensure that Vercel is installing dependencies correctly.
-*   Vercel usually handles npm workspaces automatically.
+Since this is a monorepo using pnpm workspaces, if the build fails complaining about missing modules (e.g., `@readrabbit/ui`), ensure that Vercel is configured to use pnpm:
+*   In Vercel Project Settings → General → Build & Development Settings, set the **Package Manager** to `pnpm`.
 *   If you see errors about importing local packages, you might need to add `transpilePackages` to your `next.config.ts`:
 
 ```typescript
