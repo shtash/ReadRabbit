@@ -115,7 +115,10 @@ export default function AddChildPage() {
                 faceImageStorageId = faceId;
             }
 
-            const birthdateTimestamp = new Date(formData.birthdate).getTime();
+            // Parse the date string (YYYY-MM-DD) and create a UTC timestamp at midnight
+            // to ensure consistent date handling across all timezones
+            const [year, month, day] = formData.birthdate.split('-').map(Number);
+            const birthdateTimestamp = Date.UTC(year, month - 1, day, 0, 0, 0);
 
             await createChild({
                 name: formData.name,

@@ -14,19 +14,23 @@ interface BirthdatePickerProps {
 
 export function BirthdatePicker({ value, onChange, label = "Birthdate" }: BirthdatePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const selectedDate = value ? new Date(value) : undefined;
 
     const handleSelect = (date: Date | undefined) => {
         if (date) {
-            // Convert to ISO date string (YYYY-MM-DD)
-            const isoString = date.toISOString().split('T')[0];
-            onChange(isoString);
+            // Extract date components from the local date to create YYYY-MM-DD string
+            // without any timezone conversion
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateString = `${year}-${month}-${day}`;
+            onChange(dateString);
             setIsOpen(false);
         }
     };
 
-    const displayText = selectedDate
-        ? format(selectedDate, "MMMM d, yyyy")
+    // For display, parse the YYYY-MM-DD string directly if we have a value
+    const displayText = value
+        ? format(new Date(value + 'T00:00:00'), "MMMM d, yyyy")
         : "Select birthdate";
 
     return (
@@ -39,7 +43,7 @@ export function BirthdatePicker({ value, onChange, label = "Birthdate" }: Birthd
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative w-full border-b-2 border-slate-200 bg-transparent py-2 text-left text-lg font-bold text-slate-900 transition-colors hover:border-orange-400 focus:border-orange-500 focus:outline-none dark:border-slate-700 dark:text-white"
             >
-                <span className={!selectedDate ? "text-slate-400" : ""}>
+                <span className={!value ? "text-slate-400" : ""}>
                     {displayText}
                 </span>
                 <Calendar className="absolute right-0 top-1/2 h-6 w-6 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -64,12 +68,12 @@ export function BirthdatePicker({ value, onChange, label = "Birthdate" }: Birthd
                         <div className="p-4">
                             <DayPicker
                                 mode="single"
-                                selected={selectedDate}
+                                selected={value ? new Date(value + 'T00:00:00') : undefined}
                                 onSelect={handleSelect}
                                 captionLayout="dropdown"
                                 fromYear={2000}
                                 toYear={new Date().getFullYear()}
-                                defaultMonth={selectedDate || new Date(2015, 0)}
+                                defaultMonth={value ? new Date(value + 'T00:00:00') : new Date(2015, 0)}
                                 className="mx-auto"
                                 classNames={{
                                     months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",

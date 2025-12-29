@@ -25,7 +25,7 @@ This will install dependencies for:
 
 ### 3. Set Up Environment Variables
 
-Create a `.env.local` file in the project root with the following variables:
+Create a `.env.local` file in the `web/` folder with the following variables:
 
 ```bash
 # Convex (Backend)
@@ -43,14 +43,14 @@ NANO_BANANA_API_KEY=your-nano-banana-api-key
 
 **Where to get these values:**
 
-- **Convex**: Sign up at [convex.dev](https://convex.dev), create a new project, and find your deployment URLs in Settings → URL & Deploy Key
+- **Convex**: See step 4 below - the CLI will automatically configure these values for you
 - **Clerk**: Sign up at [clerk.com](https://clerk.com), create a new application, and find your API keys in the dashboard
 - **OpenAI**: Get an API key from [platform.openai.com](https://platform.openai.com)
 - **Nano Banana**: Get an API key from your Nano Banana account (if using this service)
 
 ### 4. Initialize Convex
 
-Set up your Convex backend:
+Set up your Convex backend. This will automatically configure the `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` variables:
 
 ```bash
 # Login to Convex (first time only)
@@ -60,12 +60,25 @@ npx convex login
 pnpm run convex dev
 ```
 
+When prompted:
+1. Choose "create a new project" or "choose an existing project"
+2. Select or create your ReadRabbit project
+3. The CLI will automatically write `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` to `web/.env.local`
+
 This will:
 - Create your Convex project (if it doesn't exist)
 - Deploy your database schema and functions
+- Automatically configure your environment variables
 - Start watching for changes
 
 Keep this terminal running during development if you're working on backend code.
+
+**Verify Convex setup:**
+Check that `web/.env.local` now contains:
+```bash
+CONVEX_DEPLOYMENT=dev:your-deployment-name
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+```
 
 ### 5. Verify Setup
 

@@ -58,7 +58,12 @@ export default function EditChildPage() {
     // Load existing child data
     useEffect(() => {
         if (child && !isLoaded) {
-            const birthdateStr = new Date(child.birthdate).toISOString().split('T')[0];
+            // Convert UTC timestamp to date string using UTC methods to avoid timezone shifts
+            const date = new Date(child.birthdate);
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const birthdateStr = `${year}-${month}-${day}`;
             setFormData({
                 name: child.name,
                 gender: child.gender || "boy",
@@ -140,7 +145,10 @@ export default function EditChildPage() {
                 faceImageStorageId = faceId;
             }
 
-            const birthdateTimestamp = new Date(formData.birthdate).getTime();
+            // Parse the date string (YYYY-MM-DD) and create a UTC timestamp at midnight
+            // to ensure consistent date handling across all timezones
+            const [year, month, day] = formData.birthdate.split('-').map(Number);
+            const birthdateTimestamp = Date.UTC(year, month - 1, day, 0, 0, 0);
 
             const updates: Partial<Doc<"children">> & { childId: Id<"children"> } = {
                 childId,
