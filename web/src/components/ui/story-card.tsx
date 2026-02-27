@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 import { Play } from "lucide-react";
+import { AppImage } from "@readrabbit/ui";
 
 interface StoryCardProps {
     title: string;
@@ -23,6 +23,13 @@ export function StoryCard({ title, category, color, imageUrl, onClick }: StoryCa
 
     const defaultColor = themeColors[category.toLowerCase()] || color || "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
 
+    const gradientFallback = (
+        <div
+            className="absolute inset-0 z-0 opacity-80 transition-opacity group-hover:opacity-100"
+            style={{ background: defaultColor }}
+        />
+    );
+
     return (
         <div
             className="group relative flex aspect-[4/5] w-full cursor-pointer flex-col justify-end overflow-hidden rounded-xl md:rounded-3xl bg-muted p-4 transition-transform active:scale-95 hover:scale-[1.02]"
@@ -30,16 +37,14 @@ export function StoryCard({ title, category, color, imageUrl, onClick }: StoryCa
         >
             {/* Background Image or Gradient */}
             {imageUrl ? (
-                <img
+                <AppImage
                     src={imageUrl}
                     alt={title}
                     className="absolute inset-0 z-0 h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                    fallback={gradientFallback}
                 />
             ) : (
-                <div
-                    className="absolute inset-0 z-0 opacity-80 transition-opacity group-hover:opacity-100"
-                    style={{ background: defaultColor }}
-                />
+                gradientFallback
             )}
 
             {/* Overlay gradient for text readability */}

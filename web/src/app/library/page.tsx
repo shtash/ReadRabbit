@@ -59,7 +59,7 @@ export default function LibraryPage() {
                                     key={story._id}
                                     title={story.title}
                                     category={story.theme}
-                                    imageUrl={story.coverImageUrl}
+                                    imageUrl={story.coverThumbnailUrl ?? story.coverImageUrl}
                                     onClick={() => handleStoryClick(story._id)}
                                 />
                             ))}

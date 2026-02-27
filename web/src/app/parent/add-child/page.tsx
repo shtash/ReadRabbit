@@ -156,7 +156,6 @@ export default function AddChildPage() {
                         </div>
 
                         <div className="relative h-[50vh] md:h-[60vh] w-full bg-black">
-                            {/* @ts-expect-error - Types for react-easy-crop might be missing or incorrect */}
                             <Cropper
                                 image={tempImageSrc}
                                 crop={crop}

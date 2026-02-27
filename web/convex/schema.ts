@@ -27,6 +27,8 @@ export default defineSchema({
         avatarId: v.string(), // ID of the selected avatar
         originalImageStorageId: v.optional(v.id("_storage")),
         faceImageStorageId: v.optional(v.id("_storage")),
+        faceImageUrl: v.optional(v.string()),
+        originalImageUrl: v.optional(v.string()),
         createdAt: v.number(),
     }).index("by_parent", ["parentId"]),
 
@@ -50,6 +52,7 @@ export default defineSchema({
         photoRefId: v.optional(v.string()), // for personalization
         originalImageStorageId: v.optional(v.id("_storage")),
         faceImageStorageId: v.optional(v.id("_storage")),
+        faceImageUrl: v.optional(v.string()),
         createdAt: v.number(),
         updatedAt: v.number(),
     }).index("by_child", ["childId"]),
@@ -62,6 +65,9 @@ export default defineSchema({
         readingLevel: v.string(),
         createdAt: v.number(),
         coverImageUrl: v.optional(v.string()),
+        coverImageStorageId: v.optional(v.id("_storage")),
+        coverThumbnailStorageId: v.optional(v.id("_storage")),
+        coverThumbnailUrl: v.optional(v.string()),
         personalizationMode: v.string(), // 'none' | 'include-child'
         customPromptText: v.optional(v.string()), // for custom mode
         sourceMode: v.string(), // 'auto' | 'category' | 'custom'

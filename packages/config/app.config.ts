@@ -62,6 +62,14 @@ export const appConfig = {
     },
 
     /**
+     * Image Optimization Settings
+     */
+    imageOptimization: {
+        thumbnail: { width: 512, jpegQuality: 80 },
+        original: { jpegQuality: 85 },
+    },
+
+    /**
      * AI Provider Settings
      */
     ai: {

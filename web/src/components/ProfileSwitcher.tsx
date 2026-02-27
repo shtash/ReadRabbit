@@ -30,7 +30,7 @@ export function ProfileSwitcher() {
     const activeChild = children.find((c) => c._id === convexUser.activeChildId);
 
     // Determine current avatar and name
-    const currentAvatar = isParentMode ? user?.imageUrl : activeChild?.faceImageUrl;
+    const currentAvatar = isParentMode ? user?.imageUrl : (activeChild?.faceImageUrl ?? undefined);
     const currentName = isParentMode ? (user?.firstName || "Parent") : activeChild?.name;
 
     const handleSwitch = async (isParent: boolean, childId?: string) => {

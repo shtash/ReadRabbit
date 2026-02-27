@@ -52,6 +52,20 @@ export const createChild = mutation({
             createdAt: Date.now(),
         });
 
+        // Denormalize storage URLs
+        const urlPatches: Record<string, string> = {};
+        if (args.faceImageStorageId) {
+            const url = await ctx.storage.getUrl(args.faceImageStorageId);
+            if (url) urlPatches.faceImageUrl = url;
+        }
+        if (args.originalImageStorageId) {
+            const url = await ctx.storage.getUrl(args.originalImageStorageId);
+            if (url) urlPatches.originalImageUrl = url;
+        }
+        if (Object.keys(urlPatches).length > 0) {
+            await ctx.db.patch(childId, urlPatches);
+        }
+
         return childId;
     },
 });
@@ -100,11 +114,11 @@ export const getChildrenWithPhotos = query({
             .withIndex("by_parent", (q) => q.eq("parentId", user._id))
             .collect();
 
-        // Add photo URLs
+        // Add photo URLs (prefer denormalized, fallback to storage lookup)
         return await Promise.all(
             children.map(async (child) => {
-                let faceImageUrl = null;
-                if (child.faceImageStorageId) {
+                let faceImageUrl = child.faceImageUrl ?? null;
+                if (!faceImageUrl && child.faceImageStorageId) {
                     faceImageUrl = await ctx.storage.getUrl(child.faceImageStorageId);
                 }
                 return {
@@ -137,13 +151,13 @@ export const getChild = query({
             return null;
         }
 
-        // Add photo URLs
-        let faceImageUrl = null;
-        let originalImageUrl = null;
-        if (child.faceImageStorageId) {
+        // Add photo URLs (prefer denormalized, fallback to storage lookup)
+        let faceImageUrl = child.faceImageUrl ?? null;
+        if (!faceImageUrl && child.faceImageStorageId) {
             faceImageUrl = await ctx.storage.getUrl(child.faceImageStorageId);
         }
-        if (child.originalImageStorageId) {
+        let originalImageUrl = child.originalImageUrl ?? null;
+        if (!originalImageUrl && child.originalImageStorageId) {
             originalImageUrl = await ctx.storage.getUrl(child.originalImageStorageId);
         }
 
@@ -195,8 +209,16 @@ export const updateChild = mutation({
         }
         if (args.readingLevel !== undefined) updates.readingLevel = args.readingLevel;
         if (args.interests !== undefined) updates.interests = args.interests;
-        if (args.originalImageStorageId !== undefined) updates.originalImageStorageId = args.originalImageStorageId;
-        if (args.faceImageStorageId !== undefined) updates.faceImageStorageId = args.faceImageStorageId;
+        if (args.originalImageStorageId !== undefined) {
+            updates.originalImageStorageId = args.originalImageStorageId;
+            const url = await ctx.storage.getUrl(args.originalImageStorageId);
+            if (url) updates.originalImageUrl = url;
+        }
+        if (args.faceImageStorageId !== undefined) {
+            updates.faceImageStorageId = args.faceImageStorageId;
+            const url = await ctx.storage.getUrl(args.faceImageStorageId);
+            if (url) updates.faceImageUrl = url;
+        }
 
         await ctx.db.patch(args.childId, updates);
         return args.childId;

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { Doc } from "./_generated/dataModel";
 
 /**
@@ -271,6 +272,108 @@ export const deleteAllChildren = mutation({
             success: true,
             message: `Deleted ${deletedCount} children`,
             deletedCount,
+        };
+    },
+});
+
+/**
+ * Backfill faceImageUrl/originalImageUrl on children from storage IDs.
+ * Usage: npx convex run migrations:backfillChildUrls
+ */
+export const backfillChildUrls = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const children = await ctx.db.query("children").collect();
+        let updatedCount = 0;
+
+        for (const child of children) {
+            const patches: Record<string, string> = {};
+
+            if (!child.faceImageUrl && child.faceImageStorageId) {
+                const url = await ctx.storage.getUrl(child.faceImageStorageId);
+                if (url) patches.faceImageUrl = url;
+            }
+            if (!child.originalImageUrl && child.originalImageStorageId) {
+                const url = await ctx.storage.getUrl(child.originalImageStorageId);
+                if (url) patches.originalImageUrl = url;
+            }
+
+            if (Object.keys(patches).length > 0) {
+                await ctx.db.patch(child._id, patches);
+                updatedCount++;
+            }
+        }
+
+        return {
+            success: true,
+            message: `Backfilled URLs for ${updatedCount} children`,
+            total: children.length,
+            updated: updatedCount,
+        };
+    },
+});
+
+/**
+ * Backfill faceImageUrl on characters from storage IDs.
+ * Usage: npx convex run migrations:backfillCharacterUrls
+ */
+export const backfillCharacterUrls = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const characters = await ctx.db.query("characters").collect();
+        let updatedCount = 0;
+
+        for (const char of characters) {
+            if (!char.faceImageUrl && char.faceImageStorageId) {
+                const url = await ctx.storage.getUrl(char.faceImageStorageId);
+                if (url) {
+                    await ctx.db.patch(char._id, { faceImageUrl: url });
+                    updatedCount++;
+                }
+            }
+        }
+
+        return {
+            success: true,
+            message: `Backfilled URLs for ${updatedCount} characters`,
+            total: characters.length,
+            updated: updatedCount,
+        };
+    },
+});
+
+/**
+ * Start thumbnail backfill for existing stories.
+ * Usage: npx convex run migrations:startThumbnailBackfill
+ */
+export const startThumbnailBackfill = action({
+    args: {},
+    handler: async (ctx) => {
+        await ctx.scheduler.runAfter(0, internal.thumbs.backfillStoryThumbnails, {});
+        return { success: true, message: "Thumbnail backfill scheduled" };
+    },
+});
+
+/**
+ * Report on thumbnail coverage across stories.
+ * Usage: npx convex run migrations:thumbnailCoverageReport
+ */
+export const thumbnailCoverageReport = query({
+    args: {},
+    handler: async (ctx) => {
+        const stories = await ctx.db.query("stories").collect();
+        const total = stories.length;
+        const withCover = stories.filter((s) => s.coverImageUrl).length;
+        const withThumbnail = stories.filter((s) => s.coverThumbnailUrl).length;
+        const missingThumbnail = stories.filter(
+            (s) => s.coverImageUrl && !s.coverThumbnailUrl
+        ).length;
+
+        return {
+            total,
+            withCover,
+            withThumbnail,
+            missingThumbnail,
         };
     },
 });

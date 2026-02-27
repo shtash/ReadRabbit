@@ -260,6 +260,12 @@ export const generateStoryImages = action({
                     storyId: args.storyId,
                     storageId,
                 });
+
+                // Schedule thumbnail generation
+                await ctx.scheduler.runAfter(0, internal.thumbs.generateThumbnail, {
+                    storyId: args.storyId,
+                    sourceStorageId: storageId,
+                });
             } else {
                 console.log(`[generateStoryImages] Using direct URL: ${base64Image}`);
                 // Handle regular URL (e.g. placeholder)
@@ -363,7 +369,24 @@ export const deleteStory = mutation({
             await ctx.db.delete(reward._id);
         }
 
-        // 5. Finally, delete the story itself
+        // 5. Clean up storage files
+        const story = await ctx.db.get(args.storyId);
+        if (story?.coverImageStorageId) {
+            try {
+                await ctx.storage.delete(story.coverImageStorageId);
+            } catch (e) {
+                console.error("[deleteStory] Failed to delete cover image from storage", e);
+            }
+        }
+        if (story?.coverThumbnailStorageId) {
+            try {
+                await ctx.storage.delete(story.coverThumbnailStorageId);
+            } catch (e) {
+                console.error("[deleteStory] Failed to delete thumbnail from storage", e);
+            }
+        }
+
+        // 6. Finally, delete the story itself
         await ctx.db.delete(args.storyId);
 
         return { success: true, message: "Story and all related data deleted" };

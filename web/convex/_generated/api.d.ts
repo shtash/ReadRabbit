@@ -22,6 +22,8 @@ import type * as quizzes from "../quizzes.js";
 import type * as rewards from "../rewards.js";
 import type * as stories from "../stories.js";
 import type * as storyInternal from "../storyInternal.js";
+import type * as thumbs from "../thumbs.js";
+import type * as thumbsMutations from "../thumbsMutations.js";
 import type * as users from "../users.js";
 
 import type {
@@ -45,6 +47,8 @@ declare const fullApi: ApiFromModules<{
   rewards: typeof rewards;
   stories: typeof stories;
   storyInternal: typeof storyInternal;
+  thumbs: typeof thumbs;
+  thumbsMutations: typeof thumbsMutations;
   users: typeof users;
 }>;
 

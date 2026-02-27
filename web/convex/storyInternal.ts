@@ -107,7 +107,10 @@ export const updateStoryImageWithStorageId = internalMutation({
     handler: async (ctx, args) => {
         const imageUrl = await ctx.storage.getUrl(args.storageId);
         if (imageUrl) {
-            await ctx.db.patch(args.storyId, { coverImageUrl: imageUrl });
+            await ctx.db.patch(args.storyId, {
+                coverImageUrl: imageUrl,
+                coverImageStorageId: args.storageId,
+            });
         }
     },
 });

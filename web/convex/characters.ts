@@ -61,6 +61,14 @@ export const createCharacter = mutation({
             updatedAt: Date.now(),
         });
 
+        // Denormalize faceImageUrl
+        if (args.faceImageStorageId) {
+            const url = await ctx.storage.getUrl(args.faceImageStorageId);
+            if (url) {
+                await ctx.db.patch(characterId, { faceImageUrl: url });
+            }
+        }
+
         return characterId;
     },
 });
@@ -80,11 +88,11 @@ export const getCharacters = query({
             .withIndex("by_child", (q) => q.eq("childId", args.childId))
             .collect();
 
-        // Add photo URLs
+        // Add photo URLs (prefer denormalized, fallback to storage lookup)
         return await Promise.all(
             characters.map(async (char) => {
-                let faceImageUrl = null;
-                if (char.faceImageStorageId) {
+                let faceImageUrl = char.faceImageUrl ?? null;
+                if (!faceImageUrl && char.faceImageStorageId) {
                     faceImageUrl = await ctx.storage.getUrl(char.faceImageStorageId);
                 }
                 return {
@@ -105,9 +113,9 @@ export const getCharacter = query({
         const character = await ctx.db.get(args.characterId);
         if (!character) return null;
 
-        // Add photo URL
-        let faceImageUrl = null;
-        if (character.faceImageStorageId) {
+        // Add photo URL (prefer denormalized, fallback to storage lookup)
+        let faceImageUrl = character.faceImageUrl ?? null;
+        if (!faceImageUrl && character.faceImageStorageId) {
             faceImageUrl = await ctx.storage.getUrl(character.faceImageStorageId);
         }
 
@@ -153,7 +161,11 @@ export const updateCharacter = mutation({
         if (args.birthMonth !== undefined) updates.birthMonth = args.birthMonth;
         if (args.birthDay !== undefined) updates.birthDay = args.birthDay;
         if (args.originalImageStorageId) updates.originalImageStorageId = args.originalImageStorageId;
-        if (args.faceImageStorageId) updates.faceImageStorageId = args.faceImageStorageId;
+        if (args.faceImageStorageId) {
+            updates.faceImageStorageId = args.faceImageStorageId;
+            const url = await ctx.storage.getUrl(args.faceImageStorageId);
+            if (url) updates.faceImageUrl = url;
+        }
 
         await ctx.db.patch(args.characterId, updates);
     },
