@@ -30,10 +30,21 @@ function AddCharacterContent() {
     const generateUploadUrl = useMutation(api.characters.generateUploadUrl);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const relationshipOptions: Record<string, string[]> = {
+        boy: ["brother", "dad", "friend", "cousin", "uncle", "grandpa", "other"],
+        girl: ["sister", "mom", "friend", "cousin", "aunt", "grandma", "other"],
+        cat: ["pet", "other"],
+        dog: ["pet", "other"],
+        other: ["pet", "other"],
+    };
+
     const [formData, setFormData] = useState({
         name: "",
         type: "boy",
         customType: "",
+        relationship: "",
+        customRelationship: "",
+        description: "",
         birthYear: null as number | null,
         birthMonth: null as number | null,
         birthDay: null as number | null,
@@ -134,11 +145,14 @@ function AddCharacterContent() {
             }
 
             const finalType = formData.type === "other" ? formData.customType : formData.type;
+            const finalRelationship = formData.relationship === "other" ? formData.customRelationship : formData.relationship;
 
             await createCharacter({
                 childId: childId as Id<"children">,
                 name: formData.name,
                 type: finalType,
+                relationship: finalRelationship || undefined,
+                description: formData.description || undefined,
                 birthYear: formData.birthYear,
                 birthMonth: formData.birthMonth === null ? undefined : formData.birthMonth,
                 birthDay: formData.birthDay === null ? undefined : formData.birthDay,
@@ -304,7 +318,16 @@ function AddCharacterContent() {
                                         <button
                                             key={type}
                                             type="button"
-                                            onClick={() => setFormData({ ...formData, type })}
+                                            onClick={() => {
+                                                const newOptions = relationshipOptions[type] || relationshipOptions.other;
+                                                const keepRelationship = newOptions.includes(formData.relationship);
+                                                setFormData({
+                                                    ...formData,
+                                                    type,
+                                                    relationship: keepRelationship ? formData.relationship : "",
+                                                    customRelationship: keepRelationship ? formData.customRelationship : "",
+                                                });
+                                            }}
                                             className={`rounded-full px-4 py-2 text-sm font-bold transition-colors ${formData.type === type
                                                 ? "bg-orange-500 text-white"
                                                 : "bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400"
@@ -324,6 +347,51 @@ function AddCharacterContent() {
                                         required
                                     />
                                 )}
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 block">Relationship</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {(relationshipOptions[formData.type] || relationshipOptions.other).map((rel) => (
+                                        <button
+                                            key={rel}
+                                            type="button"
+                                            onClick={() => setFormData({ ...formData, relationship: rel, customRelationship: rel === "other" ? formData.customRelationship : "" })}
+                                            className={`rounded-full px-4 py-2 text-sm font-bold transition-colors ${formData.relationship === rel
+                                                ? "bg-orange-500 text-white"
+                                                : "bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400"
+                                                }`}
+                                        >
+                                            {rel.charAt(0).toUpperCase() + rel.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                                {formData.relationship === "other" && (
+                                    <input
+                                        type="text"
+                                        value={formData.customRelationship}
+                                        onChange={(e) => setFormData({ ...formData, customRelationship: e.target.value })}
+                                        className="mt-2 w-full border-b-2 border-slate-200 bg-transparent py-2 text-lg font-bold text-slate-900 focus:border-orange-500 focus:outline-none dark:border-slate-700 dark:text-white"
+                                        placeholder="e.g. Neighbor, Babysitter"
+                                    />
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-1 block">Description</label>
+                                <textarea
+                                    value={formData.description}
+                                    onChange={(e) => {
+                                        if (e.target.value.length <= 200) {
+                                            setFormData({ ...formData, description: e.target.value });
+                                        }
+                                    }}
+                                    className="w-full rounded-lg border-2 border-slate-200 bg-transparent p-3 text-sm text-slate-900 focus:border-orange-500 focus:outline-none dark:border-slate-700 dark:text-white resize-none"
+                                    placeholder="Personality, appearance, or fun facts..."
+                                    rows={3}
+                                    maxLength={200}
+                                />
+                                <div className="text-right text-xs text-slate-400 mt-1">{formData.description.length}/200</div>
                             </div>
 
                             <FlexibleBirthdatePicker

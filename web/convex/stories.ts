@@ -81,7 +81,7 @@ export const createStory = action({
                         else ageCategory = "senior";
                     }
 
-                    characterContext += `${char.name} is a ${ageCategory} ${char.type}. `;
+                    characterContext += `${char.name} is the child's ${char.relationship || char.type}, a ${ageCategory} ${char.type}. ${char.description || ""}`;
                 }
             }
         }
@@ -113,7 +113,7 @@ export const createStory = action({
                         else ageCategory = "senior";
                     }
 
-                    characterContext += `${char.name} is a ${ageCategory} ${char.type}. `;
+                    characterContext += `${char.name} is the child's ${char.relationship || char.type}, a ${ageCategory} ${char.type}. ${char.description || ""}`;
                 }
             }
         }

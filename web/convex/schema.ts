@@ -45,6 +45,8 @@ export default defineSchema({
         childId: v.id("children"),
         type: v.string(), // 'boy', 'girl', 'cat', 'dog', 'other' (or custom)
         name: v.string(),
+        relationship: v.optional(v.string()),
+        description: v.optional(v.string()),
         birthYear: v.number(),
         birthMonth: v.optional(v.number()),
         birthDay: v.optional(v.number()),

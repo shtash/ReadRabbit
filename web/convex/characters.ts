@@ -19,6 +19,8 @@ export const createCharacter = mutation({
         childId: v.id("children"),
         type: v.string(),
         name: v.string(),
+        relationship: v.optional(v.string()),
+        description: v.optional(v.string()),
         birthYear: v.number(),
         birthMonth: v.optional(v.number()),
         birthDay: v.optional(v.number()),
@@ -48,10 +50,25 @@ export const createCharacter = mutation({
             throw new Error("Invalid character name");
         }
 
+        if (args.relationship && containsBadWords(args.relationship)) {
+            throw new Error("Invalid relationship");
+        }
+
+        if (args.description) {
+            if (args.description.length > 200) {
+                throw new Error("Description must be 200 characters or less");
+            }
+            if (containsBadWords(args.description)) {
+                throw new Error("Invalid description");
+            }
+        }
+
         const characterId = await ctx.db.insert("characters", {
             childId: args.childId,
             type: args.type,
             name: args.name,
+            relationship: args.relationship,
+            description: args.description,
             birthYear: args.birthYear,
             birthMonth: args.birthMonth,
             birthDay: args.birthDay,
@@ -131,6 +148,8 @@ export const updateCharacter = mutation({
         characterId: v.id("characters"),
         name: v.optional(v.string()),
         type: v.optional(v.string()),
+        relationship: v.optional(v.string()),
+        description: v.optional(v.string()),
         birthYear: v.optional(v.number()),
         birthMonth: v.optional(v.number()),
         birthDay: v.optional(v.number()),
@@ -153,10 +172,23 @@ export const updateCharacter = mutation({
                 throw new Error("Invalid character type");
             }
         }
+        if (args.relationship && containsBadWords(args.relationship)) {
+            throw new Error("Invalid relationship");
+        }
+        if (args.description) {
+            if (args.description.length > 200) {
+                throw new Error("Description must be 200 characters or less");
+            }
+            if (containsBadWords(args.description)) {
+                throw new Error("Invalid description");
+            }
+        }
 
         const updates: any = { updatedAt: Date.now() };
         if (args.name) updates.name = args.name;
         if (args.type) updates.type = args.type;
+        if (args.relationship !== undefined) updates.relationship = args.relationship;
+        if (args.description !== undefined) updates.description = args.description;
         if (args.birthYear) updates.birthYear = args.birthYear;
         if (args.birthMonth !== undefined) updates.birthMonth = args.birthMonth;
         if (args.birthDay !== undefined) updates.birthDay = args.birthDay;
